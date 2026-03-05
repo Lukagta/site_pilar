@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ArrowLeft, Award, CheckCircle2, Calendar, Phone, Mail } from 'lucide-react';
 
 interface Doctor {
     id: number;
@@ -19,7 +21,7 @@ export default function DoctorDetails() {
     useEffect(() => {
         async function fetchDoctor() {
             try {
-                const res = await fetch(`http://localhost:3002/api/doctors`);
+                const res = await fetch(`http://localhost:3002/api/admin/doctors`);
                 const data = await res.json();
                 const found = data.find((d: Doctor) => d.id === parseInt(id || '0'));
                 setDoc(found);
@@ -30,86 +32,166 @@ export default function DoctorDetails() {
             }
         }
         fetchDoctor();
+        window.scrollTo(0, 0);
     }, [id]);
 
-    if (loading) return <div className="p-20 text-center">Carregando...</div>;
-    if (!doc) return <div className="p-20 text-center">Profissional não encontrado</div>;
+    if (loading) return (
+        <div className="min-h-screen bg-champagne flex items-center justify-center">
+            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+    );
+
+    if (!doc) return (
+        <div className="min-h-screen bg-champagne flex flex-col items-center justify-center p-10">
+            <h2 className="font-display text-3xl font-bold text-deep-blue mb-4">Profissional não encontrado</h2>
+            <Link to="/" className="text-primary font-bold hover:underline">Voltar para o início</Link>
+        </div>
+    );
 
     return (
-        <div className="bg-white min-h-screen">
-            <div className="relative h-[400px] w-full bg-deep-blue overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-deep-blue to-transparent z-10" />
-                <img
-                    src={`http://localhost:3002${doc.imagePath}`}
-                    className="w-full h-full object-cover grayscale opacity-40 mix-blend-overlay"
-                    alt=""
-                />
-                <div className="absolute inset-0 z-20 flex items-center">
-                    <div className="mx-auto max-w-7xl px-6 w-full">
-                        <Link to="/" className="inline-flex items-center gap-2 text-white/60 hover:text-white mb-6 transition-colors">
-                            <span className="material-symbols-outlined text-sm">arrow_back_ios</span>
-                            <span className="text-xs font-bold uppercase tracking-widest">Voltar para Início</span>
-                        </Link>
-                        <div className="space-y-2">
-                            <span className="inline-block px-3 py-1 rounded-full bg-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest border border-primary/20">
-                                {doc.specialty}
-                            </span>
-                            <h1 className="text-5xl md:text-6xl font-extrabold text-white tracking-tight">{doc.name}</h1>
-                            <p className="text-white/40 font-bold tracking-widest uppercase text-sm">CRM: {doc.crm}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div className="bg-white min-h-screen font-sans">
+            {/* Hero Section - Magazine Style Page Title */}
+            <section className="relative pt-32 pb-20 bg-champagne overflow-hidden">
+                <div className="absolute top-0 right-0 w-1/2 h-full bg-sand/30 -skew-x-12 translate-x-1/4" />
 
-            <div className="mx-auto max-w-7xl px-6 py-20">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-20">
-                    <div className="lg:col-span-2 space-y-12">
-                        <section>
-                            <h2 className="text-deep-blue text-sm font-bold uppercase tracking-widest mb-6 flex items-center gap-2">
-                                <span className="h-px w-8 bg-primary"></span>
-                                Sobre o Profissional
-                            </h2>
-                            <p className="text-med-blue/70 text-lg font-medium leading-relaxed whitespace-pre-line">
-                                {doc.fullDescription}
+                <div className="container mx-auto px-6 relative z-10">
+                    <Link to="/" className="flex items-center gap-2 text-med-blue/40 hover:text-primary font-bold text-xs uppercase tracking-[0.2em] mb-12 transition-all group">
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                        Voltar ao Início
+                    </Link>
+
+                    <div className="grid lg:grid-cols-12 gap-16 items-end">
+                        <div className="lg:col-span-8">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="space-y-6"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="h-[1px] w-12 bg-primary" />
+                                    <span className="text-primary font-bold uppercase tracking-[0.3em] text-[10px]">
+                                        {doc.specialty}
+                                    </span>
+                                </div>
+                                <h1 className="font-display text-6xl md:text-8xl font-extrabold text-deep-blue leading-none tracking-tighter">
+                                    {doc.name.split(' ').map((word, i) => (
+                                        i === 0 ? <span key={i}>{word} <br /></span> : <span key={i} className={i === 1 ? "text-primary italic font-light" : ""}>{word} </span>
+                                    ))}
+                                </h1>
+                                <p className="text-xl font-bold text-med-blue/30 tracking-[0.1em] uppercase">CRM {doc.crm}</p>
+                            </motion.div>
+                        </div>
+                        <div className="lg:col-span-4 hidden lg:block">
+                            <p className="text-med-blue/60 font-medium leading-relaxed italic border-l-2 border-primary/20 pl-8">
+                                "{doc.description}"
                             </p>
-                        </section>
-
-                        <section className="bg-gray-light/30 rounded-3xl p-10 border border-med-blue/5">
-                            <h3 className="text-deep-blue font-extrabold text-2xl mb-6">Qualificações e Especialidades</h3>
-                            <div className="grid md:grid-cols-2 gap-4">
-                                {doc.fullDescription.split('\n').filter(l => l.includes('-')).map((line, i) => (
-                                    <div key={i} className="flex items-start gap-3">
-                                        <span className="material-symbols-outlined text-primary text-xl">check_circle</span>
-                                        <span className="font-medium text-med-blue/70">{line.replace('-', '').trim()}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </section>
-                    </div>
-
-                    <div className="space-y-8">
-                        <div className="rounded-3xl bg-white border border-med-blue/10 p-8 shadow-xl shadow-deep-blue/5 overflow-hidden relative group">
-                            <div className="aspect-[3/4] rounded-2xl overflow-hidden mb-6">
-                                <img
-                                    src={`http://localhost:3002${doc.imagePath}`}
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                    alt={doc.name}
-                                />
-                            </div>
-                            <div className="text-center">
-                                <p className="text-med-blue/40 text-xs font-bold mb-1 uppercase tracking-widest">Agende sua consulta</p>
-                                <h4 className="text-deep-blue font-extrabold text-xl mb-6">{doc.name}</h4>
-                                <a
-                                    href="#contact"
-                                    className="block w-full py-4 rounded-2xl bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 text-center"
-                                >
-                                    Entrar em Contato
-                                </a>
-                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+
+                {/* Aesthetic Flourish */}
+                <div className="absolute -bottom-20 -left-20 pointer-events-none select-none opacity-[0.03]">
+                    <span className="font-display text-[25rem] font-black text-deep-blue leading-none">DOC</span>
+                </div>
+            </section>
+
+            {/* Profile Content */}
+            <section className="py-24">
+                <div className="container mx-auto px-6">
+                    <div className="grid lg:grid-cols-12 gap-20">
+
+                        {/* Bio Column */}
+                        <div className="lg:col-span-7 space-y-16">
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
+                                className="space-y-8"
+                            >
+                                <h3 className="font-display text-3xl font-bold text-deep-blue flex items-center gap-4">
+                                    Trajetória Profissional
+                                    <div className="h-px flex-1 bg-med-blue/5" />
+                                </h3>
+                                <div className="text-lg text-med-blue/80 leading-relaxed font-normal whitespace-pre-wrap first-letter:text-5xl first-letter:font-display first-letter:font-black first-letter:text-primary first-letter:float-left first-letter:mr-3 first-letter:mt-1">
+                                    {doc.fullDescription}
+                                </div>
+                            </motion.div>
+
+                            {/* Skills / Qualities Section */}
+                            <div className="grid md:grid-cols-2 gap-8">
+                                <div className="bg-sand p-8 rounded-[2rem] space-y-4">
+                                    <Award className="w-8 h-8 text-primary" />
+                                    <h4 className="font-display font-bold text-deep-blue text-xl">Especialidades</h4>
+                                    <ul className="space-y-3">
+                                        <li className="flex items-center gap-3 text-sm font-medium text-med-blue/60">
+                                            <CheckCircle2 className="w-4 h-4 text-primary" /> {doc.specialty}
+                                        </li>
+                                        <li className="flex items-center gap-3 text-sm font-medium text-med-blue/60">
+                                            <CheckCircle2 className="w-4 h-4 text-primary" /> Medicina Integrativa
+                                        </li>
+                                        <li className="flex items-center gap-3 text-sm font-medium text-med-blue/60">
+                                            <CheckCircle2 className="w-4 h-4 text-primary" /> Atendimento Humanizado
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div className="bg-deep-blue p-8 rounded-[2rem] space-y-4 text-white">
+                                    <Calendar className="w-8 h-8 text-primary" />
+                                    <h4 className="font-display font-bold text-xl">Disponibilidade</h4>
+                                    <p className="text-white/60 text-sm leading-relaxed">
+                                        Atendimento presencial em Itaboraí facilitado por agendamento prévio. Consulte horários disponíveis.
+                                    </p>
+                                    <a href="#contact" className="inline-block text-primary font-bold text-xs uppercase tracking-widest pt-2 hover:translate-x-1 transition-transform">
+                                        Ver Agenda →
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Portrait Column */}
+                        <div className="lg:col-span-5 relative">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.8 }}
+                                className="sticky top-32"
+                            >
+                                <div className="aspect-[3/4] rounded-[3rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(11,42,74,0.15)] bg-sand">
+                                    <img
+                                        src={`http://localhost:3002${doc.imagePath}`}
+                                        alt={doc.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+
+                                {/* Floating Contact Card */}
+                                <div className="absolute -bottom-10 left-10 right-10 bg-white p-8 rounded-[2.5rem] shadow-2xl border border-deep-blue/5">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-4 text-center">Agendamento Direto</p>
+                                    <div className="space-y-4 mb-8">
+                                        <div className="flex items-center gap-4 p-3 hover:bg-champagne rounded-2xl transition-colors cursor-pointer group">
+                                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                                                <Phone className="w-4 h-4" />
+                                            </div>
+                                            <span className="text-sm font-bold text-deep-blue">(21) 97157-1603</span>
+                                        </div>
+                                        <div className="flex items-center gap-4 p-3 hover:bg-champagne rounded-2xl transition-colors cursor-pointer group">
+                                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                                                <Mail className="w-4 h-4" />
+                                            </div>
+                                            <span className="text-sm font-bold text-deep-blue">contato@pilar.med.br</span>
+                                        </div>
+                                    </div>
+                                    <a
+                                        href="/agendar"
+                                        className="block w-full bg-deep-blue hover:bg-primary text-white text-center py-5 rounded-2xl font-bold text-sm shadow-lg shadow-deep-blue/10 transition-all transform hover:-translate-y-1"
+                                    >
+                                        Marcar Consulta Agora
+                                    </a>
+                                </div>
+                            </motion.div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
         </div>
     );
 }

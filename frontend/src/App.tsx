@@ -14,6 +14,7 @@ import type { SiteConfig } from "./services/api"
 
 import Login from "./pages/admin/Login"
 import Dashboard from "./pages/admin/Dashboard"
+import DoctorForm from "./pages/admin/DoctorForm"
 import DoctorDetails from "./pages/DoctorDetails"
 
 const HomePage = ({ config }: { config: SiteConfig | null }) => (
@@ -41,13 +42,14 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen flex flex-col" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <div className="min-h-screen flex flex-col" style={{ fontFamily: "'Outfit', sans-serif" }}>
         <Header config={config} />
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<HomePage config={config} />} />
             <Route path="/admin/login" element={<Login />} />
             <Route path="/admin/dashboard" element={<Dashboard />} />
+            <Route path="/admin/medico/novo" element={<DoctorForm />} />
             <Route path="/medico/:id" element={<DoctorDetails />} />
           </Routes>
         </main>

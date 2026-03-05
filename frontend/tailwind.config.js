@@ -21,11 +21,13 @@ export default {
         "gold-excel": "#C9973F",
         "white": "#FFFFFF",
         "gray-light": "#F2F4F6",
-        primary: "#C9973F", // Usando o Dourado como cor primária
-        "charcoal": "#0B2A4A", // Usando o Azul Profundo para textos escuros
+        "champagne": "#F9F9F7",
+        "sand": "#F5F5F0",
+        primary: "#C9973F",
+        "charcoal": "#0B2A4A",
       },
       fontFamily: {
-        display: ["Inter", "sans-serif"],
+        display: ["Outfit", "sans-serif"],
         sans: ["Inter", "sans-serif"],
       },
     },

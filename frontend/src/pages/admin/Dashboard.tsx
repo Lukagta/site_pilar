@@ -1,4 +1,17 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+    Plus,
+    Search,
+    Eye,
+    EyeOff,
+    Edit2,
+    Trash2,
+    Stethoscope,
+    LogOut,
+    LayoutDashboard,
+    Users
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface Doctor {
@@ -6,30 +19,24 @@ interface Doctor {
     name: string;
     crm: string;
     specialty: string;
-    imagePath: string;
     isActive: boolean;
+    imagePath: string;
 }
 
-export default function Dashboard() {
+const Dashboard = () => {
     const [doctors, setDoctors] = useState<Doctor[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [formData, setFormData] = useState({
-        name: '',
-        crm: '',
-        specialty: '',
-        description: '',
-        fullDescription: '',
-        order: '0'
-    });
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!localStorage.getItem('admin_auth')) {
+        // Check auth
+        if (!localStorage.getItem('isAdmin')) {
             navigate('/admin/login');
+            return;
         }
         fetchDoctors();
-    }, [navigate]);
+    }, []);
 
     const fetchDoctors = async () => {
         try {
@@ -38,230 +45,205 @@ export default function Dashboard() {
             setDoctors(data);
         } catch (error) {
             console.error('Erro ao buscar médicos');
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleToggleActive = async (id: number) => {
+    const toggleStatus = async (id: number, currentStatus: boolean) => {
         try {
-            await fetch(`http://localhost:3002/api/admin/doctors/${id}/toggle`, { method: 'PATCH' });
-            fetchDoctors();
-        } catch (error) {
-            console.error('Erro ao alterar status');
-        }
-    };
-
-    const handleDelete = async (id: number) => {
-        if (confirm('Tem certeza que deseja remover este profissional?')) {
-            try {
-                await fetch(`http://localhost:3002/api/admin/doctors/${id}`, { method: 'DELETE' });
-                fetchDoctors();
-            } catch (error) {
-                console.error('Erro ao deletar');
-            }
-        }
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!selectedFile) return alert('Selecione uma foto');
-
-        const data = new FormData();
-        data.append('name', formData.name);
-        data.append('crm', formData.crm);
-        data.append('specialty', formData.specialty);
-        data.append('description', formData.description);
-        data.append('fullDescription', formData.fullDescription);
-        data.append('order', formData.order);
-        data.append('image', selectedFile);
-
-        try {
-            const res = await fetch('http://localhost:3002/api/admin/doctors', {
-                method: 'POST',
-                body: data
+            await fetch(`http://localhost:3002/api/admin/doctors/${id}/toggle`, {
+                method: 'PATCH'
             });
-
-            if (res.ok) {
-                setIsModalOpen(false);
-                setFormData({ name: '', crm: '', specialty: '', description: '', fullDescription: '', order: '0' });
-                setSelectedFile(null);
-                fetchDoctors();
-            }
+            setDoctors(doctors.map(d => d.id === id ? { ...d, isActive: !currentStatus } : d));
         } catch (error) {
-            alert('Erro ao salvar');
+            console.error('Erro ao alternar status');
         }
     };
+
+    const deleteDoctor = async (id: number) => {
+        if (!window.confirm('Tem certeza que deseja remover este profissional? Esta ação é irreversível.')) return;
+
+        try {
+            await fetch(`http://localhost:3002/api/admin/doctors/${id}`, {
+                method: 'DELETE'
+            });
+            setDoctors(doctors.filter(d => d.id !== id));
+        } catch (error) {
+            console.error('Erro ao excluir médico');
+        }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('isAdmin');
+        navigate('/admin/login');
+    };
+
+    const filteredDoctors = doctors.filter(d =>
+        d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        d.specialty.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
-        <div className="min-h-screen bg-gray-light/30 p-10">
-            <div className="mx-auto max-w-6xl">
-                <div className="flex items-center justify-between mb-10">
+        <div className="min-h-screen bg-champagne flex">
+
+            {/* Sidebar Luxo */}
+            <aside className="w-72 bg-deep-blue text-white flex flex-col p-8 fixed h-full z-20 shadow-2xl">
+                <div className="flex items-center gap-3 mb-16">
+                    <div className="bg-primary p-2 rounded-lg">
+                        <Stethoscope className="w-6 h-6 text-deep-blue" strokeWidth={2.5} />
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="font-display text-xl font-black leading-none tracking-tighter">PILAR</span>
+                        <span className="text-[8px] font-bold text-primary uppercase tracking-[0.2em] mt-1">Management</span>
+                    </div>
+                </div>
+
+                <nav className="flex-1 space-y-4">
+                    <a href="#" className="flex items-center gap-4 bg-white/10 p-4 rounded-2xl text-primary font-bold transition-all">
+                        <LayoutDashboard className="w-5 h-5" />
+                        Dashboard
+                    </a>
+                    <a href="#" className="flex items-center gap-4 text-white/50 p-4 rounded-2xl hover:bg-white/5 hover:text-white transition-all">
+                        <Users className="w-5 h-5" />
+                        Médicos
+                    </a>
+                </nav>
+
+                <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-4 text-white/40 p-4 rounded-2xl hover:text-red-400 transition-all mt-auto"
+                >
+                    <LogOut className="w-5 h-5" />
+                    Sair do Sistema
+                </button>
+            </aside>
+
+            {/* Main Content */}
+            <main className="flex-1 ml-72 p-12">
+                <header className="flex justify-between items-end mb-12">
                     <div>
-                        <h1 className="text-3xl font-extrabold text-deep-blue">Gestão do Corpo Clínico</h1>
-                        <p className="text-med-blue/60 font-medium">Gerencie os profissionais que aparecem no site</p>
+                        <h1 className="font-display text-4xl font-extrabold text-deep-blue tracking-tighter">Gerenciar Profissionais</h1>
+                        <p className="text-med-blue/40 text-sm font-medium mt-2">Controle de visibilidade e dados do corpo clínico.</p>
                     </div>
-                    <div className="flex gap-4">
-                        <button
-                            onClick={() => setIsModalOpen(true)}
-                            className="bg-primary text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
-                        >
-                            <span className="material-symbols-outlined font-bold">add</span>
-                            Novo Profissional
-                        </button>
-                        <button
-                            onClick={() => { localStorage.removeItem('admin_auth'); navigate('/admin/login'); }}
-                            className="bg-white text-deep-blue px-6 py-3 rounded-2xl font-bold border border-med-blue/10 hover:bg-gray-100 transition-all"
-                        >
-                            Sair
-                        </button>
+                    <button
+                        onClick={() => navigate('/admin/medico/novo')}
+                        className="bg-primary hover:bg-deep-blue text-white font-bold px-8 py-4 rounded-2xl flex items-center gap-3 transition-all transform hover:-translate-y-1 shadow-lg shadow-primary/20 group"
+                    >
+                        <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+                        Cadastrar Médico
+                    </button>
+                </header>
+
+                {/* Stats Row */}
+                <div className="grid grid-cols-3 gap-8 mb-12">
+                    <div className="bg-white p-8 rounded-[2rem] border border-deep-blue/5 shadow-sm">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-med-blue/40 mb-2">Total de Médicos</p>
+                        <p className="text-4xl font-display font-black text-deep-blue">{doctors.length}</p>
+                    </div>
+                    <div className="bg-white p-8 rounded-[2rem] border border-deep-blue/5 shadow-sm">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-med-blue/40 mb-2">Ativos no Site</p>
+                        <p className="text-4xl font-display font-black text-green-500">{doctors.filter(d => d.isActive).length}</p>
+                    </div>
+                    <div className="bg-white p-8 rounded-[2rem] border border-deep-blue/5 shadow-sm">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-med-blue/40 mb-2">Inativos</p>
+                        <p className="text-4xl font-display font-black text-med-blue/20">{doctors.filter(d => !d.isActive).length}</p>
                     </div>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {doctors.map((doc) => (
-                        <div key={doc.id} className="bg-white rounded-3xl p-6 shadow-xl shadow-deep-blue/5 border border-med-blue/5 relative overflow-hidden group">
-                            <div className="flex items-start gap-4 mb-4">
-                                <img
-                                    src={`http://localhost:3002${doc.imagePath}`}
-                                    className="w-20 h-24 object-cover rounded-xl bg-gray-light"
-                                    alt={doc.name}
-                                />
-                                <div className="flex-1">
-                                    <h3 className="font-extrabold text-deep-blue">{doc.name}</h3>
-                                    <p className="text-xs font-bold text-primary italic uppercase">{doc.specialty}</p>
-                                    <p className="text-xs font-semibold text-med-blue/40 mt-1">CRM: {doc.crm}</p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center justify-between mt-6 pt-4 border-t border-med-blue/5">
-                                <div className="flex items-center gap-2">
-                                    <span className={`h-2 w-2 rounded-full ${doc.isActive ? 'bg-green-500' : 'bg-red-500'}`} />
-                                    <span className="text-[10px] font-bold uppercase tracking-wider text-med-blue/40">
-                                        {doc.isActive ? 'Visível' : 'Oculto'}
-                                    </span>
-                                </div>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => handleToggleActive(doc.id)}
-                                        className={`p-2 rounded-xl transition-all ${doc.isActive ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'}`}
-                                        title={doc.isActive ? "Desativar" : "Ativar"}
-                                    >
-                                        <span className="material-symbols-outlined text-lg font-bold">{doc.isActive ? 'visibility_off' : 'visibility'}</span>
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(doc.id)}
-                                        className="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition-all"
-                                        title="Excluir"
-                                    >
-                                        <span className="material-symbols-outlined text-lg font-bold">delete</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                {isModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-deep-blue/40 backdrop-blur-sm p-6 overflow-y-auto">
-                        <div className="bg-white rounded-3xl w-full max-w-2xl p-10 relative mt-20 mb-20">
-                            <button
-                                onClick={() => setIsModalOpen(false)}
-                                className="absolute top-6 right-6 text-med-blue/40 hover:text-deep-blue"
-                            >
-                                <span className="material-symbols-outlined text-3xl font-bold">close</span>
-                            </button>
-
-                            <h2 className="text-2xl font-extrabold text-deep-blue mb-2">Novo Profissional</h2>
-                            <p className="text-med-blue/60 font-medium text-sm mb-8">Preencha os dados e suba uma foto para a landing page</p>
-
-                            <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
-                                <div className="col-span-2 md:col-span-1">
-                                    <label className="block text-xs font-bold text-deep-blue mb-2 ml-1">Nome Completo</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full rounded-2xl border border-med-blue/20 bg-gray-light/30 px-5 py-3 text-deep-blue focus:border-primary focus:outline-none"
-                                    />
-                                </div>
-                                <div className="col-span-2 md:col-span-1">
-                                    <label className="block text-xs font-bold text-deep-blue mb-2 ml-1">CRM</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={formData.crm}
-                                        onChange={(e) => setFormData({ ...formData, crm: e.target.value })}
-                                        className="w-full rounded-2xl border border-med-blue/20 bg-gray-light/30 px-5 py-3 text-deep-blue focus:border-primary focus:outline-none"
-                                    />
-                                </div>
-                                <div className="col-span-2 md:col-span-1">
-                                    <label className="block text-xs font-bold text-deep-blue mb-2 ml-1">Especialidade</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={formData.specialty}
-                                        onChange={(e) => setFormData({ ...formData, specialty: e.target.value })}
-                                        className="w-full rounded-2xl border border-med-blue/20 bg-gray-light/30 px-5 py-3 text-deep-blue focus:border-primary focus:outline-none"
-                                    />
-                                </div>
-                                <div className="col-span-2 md:col-span-1">
-                                    <label className="block text-xs font-bold text-deep-blue mb-2 ml-1">Ordem (ex: 1, 2, 3)</label>
-                                    <input
-                                        type="number"
-                                        value={formData.order}
-                                        onChange={(e) => setFormData({ ...formData, order: e.target.value })}
-                                        className="w-full rounded-2xl border border-med-blue/20 bg-gray-light/30 px-5 py-3 text-deep-blue focus:border-primary focus:outline-none"
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-xs font-bold text-deep-blue mb-2 ml-1">Resumo (Landing Page)</label>
-                                    <textarea
-                                        required
-                                        rows={2}
-                                        value={formData.description}
-                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                        className="w-full rounded-2xl border border-med-blue/20 bg-gray-light/30 px-5 py-3 text-deep-blue focus:border-primary focus:outline-none resize-none"
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-xs font-bold text-deep-blue mb-2 ml-1">Descrição Completa e Especialidades (Página de Detalhes)</label>
-                                    <textarea
-                                        required
-                                        rows={4}
-                                        value={formData.fullDescription}
-                                        onChange={(e) => setFormData({ ...formData, fullDescription: e.target.value })}
-                                        className="w-full rounded-2xl border border-med-blue/20 bg-gray-light/30 px-5 py-3 text-deep-blue focus:border-primary focus:outline-none resize-none"
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <label className="block text-xs font-bold text-deep-blue mb-2 ml-1">Foto do Profissional</label>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        required
-                                        onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                                        className="block w-full text-sm text-med-blue/50
-                      file:mr-4 file:py-3 file:px-6
-                      file:rounded-2xl file:border-0
-                      file:text-sm file:font-bold
-                      file:bg-deep-blue file:text-white
-                      hover:file:bg-med-blue file:cursor-pointer"
-                                    />
-                                </div>
-
-                                <div className="col-span-2 pt-4">
-                                    <button
-                                        type="submit"
-                                        className="w-full py-4 rounded-2xl bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
-                                    >
-                                        Salvar Profissional
-                                    </button>
-                                </div>
-                            </form>
+                {/* Search & Table */}
+                <div className="bg-white rounded-[3rem] p-4 shadow-[0_50px_100px_-20px_rgba(11,42,74,0.05)] border border-deep-blue/5">
+                    <div className="p-6 flex items-center gap-4">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-med-blue/20" />
+                            <input
+                                type="text"
+                                placeholder="Buscar por nome ou especialidade..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full bg-champagne/50 border-none rounded-2xl pl-12 pr-6 py-4 text-deep-blue font-medium placeholder:text-med-blue/20 focus:ring-2 focus:ring-primary/20 transition-all"
+                            />
                         </div>
                     </div>
-                )}
-            </div>
+
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead>
+                                <tr className="text-left border-b border-med-blue/5">
+                                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-deep-blue/40">Profissional</th>
+                                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-deep-blue/40">CRM / Especialidade</th>
+                                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-deep-blue/40 text-center">Status</th>
+                                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-deep-blue/40 text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-med-blue/5">
+                                <AnimatePresence>
+                                    {filteredDoctors.map((doctor) => (
+                                        <motion.tr
+                                            key={doctor.id}
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            className="group hover:bg-champagne/30 transition-colors"
+                                        >
+                                            <td className="px-8 py-6">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 rounded-2xl overflow-hidden bg-sand">
+                                                        <img
+                                                            src={`http://localhost:3002${doctor.imagePath}`}
+                                                            alt={doctor.name}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-display font-bold text-deep-blue">{doctor.name}</p>
+                                                        <p className="text-[10px] font-bold text-primary uppercase tracking-widest">Inscrito recentemente</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-6">
+                                                <p className="text-sm font-bold text-med-blue/60">{doctor.crm}</p>
+                                                <p className="text-xs font-medium text-med-blue/40">{doctor.specialty}</p>
+                                            </td>
+                                            <td className="px-8 py-6">
+                                                <div className="flex justify-center">
+                                                    <button
+                                                        onClick={() => toggleStatus(doctor.id, doctor.isActive)}
+                                                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${doctor.isActive ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-400'
+                                                            }`}
+                                                    >
+                                                        {doctor.isActive ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                                                        {doctor.isActive ? 'Ativo' : 'Inativo'}
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-6">
+                                                <div className="flex justify-end gap-2">
+                                                    <button
+                                                        className="p-3 bg-champagne hover:bg-deep-blue hover:text-white rounded-xl transition-all text-med-blue/40"
+                                                        title="Editar Dados"
+                                                    >
+                                                        <Edit2 className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => deleteDoctor(doctor.id)}
+                                                        className="p-3 bg-champagne hover:bg-red-500 hover:text-white rounded-xl transition-all text-med-blue/40"
+                                                        title="Excluir"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </motion.tr>
+                                    ))}
+                                </AnimatePresence>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
         </div>
     );
-}
+};
+
+export default Dashboard;
