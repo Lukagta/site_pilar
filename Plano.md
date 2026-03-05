@@ -7,9 +7,11 @@
 - [x] Versionamento do código (Git v1.0.0).
 
 ## 🚀 Fase 2: Área Administrativa (Em Andamento)
-- [ ] Criar Dashboard administrativo para gestão do Corpo Clínico.
-- [ ] Implementar upload de imagem com redimensionamento automático (Sharp/WebP).
-- [ ] Adicionar sistema de "Ativar/Desativar" profissional (Toggle).
+- [x] Criar Dashboard administrativo para gestão do Corpo Clínico.
+- [x] Implementar upload de imagem com redimensionamento automático (Sharp/WebP).
+- [x] Adicionar sistema de "Ativar/Desativar" profissional (Toggle).
+- [ ] Criar seção de "Dados da Clínica" para gerenciar WhatsApp, Endereço e Redes Sociais.
+- [ ] Implementar upload e troca da Logo da clínica via Dashboard.
 - [ ] Criar página de descrição completa (/medico/:id) com bio e especialidades.
 
 ## 🛠 Detalhes Técnicos do Dashboard

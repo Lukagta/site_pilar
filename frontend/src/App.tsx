@@ -15,6 +15,7 @@ import type { SiteConfig } from "./services/api"
 import Login from "./pages/admin/Login"
 import Dashboard from "./pages/admin/Dashboard"
 import DoctorForm from "./pages/admin/DoctorForm"
+import ClinicConfig from "./pages/admin/ClinicConfig"
 import DoctorDetails from "./pages/DoctorDetails"
 
 const HomePage = ({ config }: { config: SiteConfig | null }) => (
@@ -50,6 +51,7 @@ function App() {
             <Route path="/admin/login" element={<Login />} />
             <Route path="/admin/dashboard" element={<Dashboard />} />
             <Route path="/admin/medico/novo" element={<DoctorForm />} />
+            <Route path="/admin/config" element={<ClinicConfig />} />
             <Route path="/medico/:id" element={<DoctorDetails />} />
           </Routes>
         </main>

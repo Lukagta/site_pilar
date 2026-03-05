@@ -152,6 +152,63 @@ app.delete('/api/admin/doctors/:id', async (req, res) => {
     }
 });
 
+// --- ROTAS DE CONFIGURAÇÃO (ADMIN) ---
+
+// Atualizar configurações de texto
+app.post('/api/admin/config', async (req, res) => {
+    try {
+        const { configs } = req.body; // Array de { key, value }
+
+        for (const item of configs) {
+            await prisma.siteConfig.upsert({
+                where: { key: item.key },
+                update: { value: item.value },
+                create: { key: item.key, value: item.value }
+            });
+        }
+
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao atualizar configurações' });
+    }
+});
+
+// Upload de Logo
+app.post('/api/admin/config/logo', async (req, res) => {
+    try {
+        const multer = (await import('multer')).default;
+        const sharp = (await import('sharp')).default;
+
+        const upload = multer({ storage: multer.memoryStorage() }).single('logo');
+
+        upload(req, res, async (err) => {
+            if (err) return res.status(500).json({ error: 'Erro no upload da logo' });
+            if (!req.file) return res.status(400).json({ error: 'Arquivo de logo é obrigatório' });
+
+            const fileName = `logo-${Date.now()}.webp`;
+            const filePath = path.join(UPLOADS_PATH, fileName);
+
+            // Logo geralmente precisa de transparência e tamanho controlado
+            await sharp(req.file.buffer)
+                .resize(400, 200, { fit: 'inside' })
+                .webp({ quality: 90 })
+                .toFile(filePath);
+
+            const logoPath = `/uploads/${fileName}`;
+
+            await prisma.siteConfig.upsert({
+                where: { key: 'logo' },
+                update: { value: logoPath },
+                create: { key: 'logo', value: logoPath }
+            });
+
+            res.json({ success: true, logoPath });
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao processar logo' });
+    }
+});
+
 app.get('/', (req, res) => res.send('API Pilar Ativa'));
 
 app.listen(PORT, () => {

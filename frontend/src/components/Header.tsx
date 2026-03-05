@@ -29,9 +29,19 @@ export function Header({ config }: { config: SiteConfig | null }) {
 
                 {/* Logo Luxury */}
                 <a href="/" className="flex items-center gap-3 group relative">
-                    <div className="bg-deep-blue p-2 rounded-lg transition-transform group-hover:rotate-12 duration-500">
-                        <Stethoscope className="w-6 h-6 text-primary" strokeWidth={2.5} />
-                    </div>
+                    {config?.logo ? (
+                        <div className="h-10 transition-transform group-hover:scale-105 duration-500">
+                            <img
+                                src={`http://localhost:3002${config.logo}`}
+                                alt="Pilar Medicina"
+                                className="h-full w-auto object-contain"
+                            />
+                        </div>
+                    ) : (
+                        <div className="bg-deep-blue p-2 rounded-lg transition-transform group-hover:rotate-12 duration-500">
+                            <Stethoscope className="w-6 h-6 text-primary" strokeWidth={2.5} />
+                        </div>
+                    )}
                     <div className="flex flex-col">
                         <span className="font-display text-xl font-black text-deep-blue leading-none tracking-tighter">
                             PILAR

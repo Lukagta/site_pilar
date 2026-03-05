@@ -10,7 +10,8 @@ import {
     Stethoscope,
     LogOut,
     LayoutDashboard,
-    Users
+    Users,
+    Settings
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -25,6 +26,7 @@ interface Doctor {
 
 const Dashboard = () => {
     const [doctors, setDoctors] = useState<Doctor[]>([]);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
@@ -100,14 +102,27 @@ const Dashboard = () => {
                 </div>
 
                 <nav className="flex-1 space-y-4">
-                    <a href="#" className="flex items-center gap-4 bg-white/10 p-4 rounded-2xl text-primary font-bold transition-all">
+                    <button
+                        onClick={() => navigate('/admin/dashboard')}
+                        className="w-full flex items-center gap-4 bg-white/10 p-4 rounded-2xl text-primary font-bold transition-all"
+                    >
                         <LayoutDashboard className="w-5 h-5" />
                         Dashboard
-                    </a>
-                    <a href="#" className="flex items-center gap-4 text-white/50 p-4 rounded-2xl hover:bg-white/5 hover:text-white transition-all">
+                    </button>
+                    <button
+                        onClick={() => navigate('/admin/dashboard')}
+                        className="w-full flex items-center gap-4 text-white/50 p-4 rounded-2xl hover:bg-white/5 hover:text-white transition-all"
+                    >
                         <Users className="w-5 h-5" />
                         Médicos
-                    </a>
+                    </button>
+                    <button
+                        onClick={() => navigate('/admin/config')}
+                        className="w-full flex items-center gap-4 text-white/50 p-4 rounded-2xl hover:bg-white/5 hover:text-white transition-all"
+                    >
+                        <Settings className="w-5 h-5" />
+                        Configurações
+                    </button>
                 </nav>
 
                 <button

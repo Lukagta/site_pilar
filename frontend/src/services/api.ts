@@ -5,6 +5,7 @@ export interface SiteConfig {
     instagram: string;
     facebook: string;
     address: string;
+    logo?: string;
 }
 
 export async function getSiteConfig(): Promise<SiteConfig> {
@@ -22,6 +23,7 @@ export async function getSiteConfig(): Promise<SiteConfig> {
             instagram: 'https://instagram.com',
             facebook: 'https://facebook.com',
             address: 'Av. Paulista, 1200 - Conj 42, Bela Vista, São Paulo - SP',
+            logo: '',
         };
     }
 }
