@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d4af35",
+                        "background-light": "#faf9f6",
+                        "background-alt": "#f2efea",
+                        "charcoal": "#333333",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "full": "9999px"},
+                },
+            },
+        }</script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-background-light text-charcoal font-display">
+<!-- Navigation -->
+<header class="sticky top-0 z-50 w-full border-b border-primary/10 bg-background-light/80 backdrop-blur-md">
+<div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+<div class="flex items-center gap-2 text-primary dark:text-emerald-400">
+<span class="material-symbols-outlined text-3xl font-bold">medical_services</span>
+<h1 class="text-xl font-extrabold tracking-tight">Pilar <span class="font-normal text-slate-500">Medicina</span></h1>
+</div>
+<nav class="hidden md:flex items-center gap-8 text-sm font-semibold">
+<a class="hover:text-primary transition-colors" href="#services">Services</a>
+<a class="hover:text-primary transition-colors" href="#about">About</a>
+<a class="hover:text-primary transition-colors" href="#doctors">Doctors</a>
+<a class="hover:text-primary transition-colors" href="#blog">Blog</a>
+<a class="hover:text-primary transition-colors" href="#contact">Contact</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="hidden lg:flex items-center justify-center rounded-lg bg-primary px-6 py-2.5 text-sm font-bold text-white transition-all hover:bg-primary/90 focus:ring-4 focus:ring-primary/20">
+                    Book Appointment
+                </button>
+<div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">person</span>
+</div>
+</div>
+</div>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative overflow-hidden py-16 lg:py-24">
+<div class="mx-auto max-w-7xl px-6">
+<div class="grid items-center gap-12 lg:grid-cols-2">
+<div class="flex flex-col gap-8">
+<div class="space-y-4">
+<span class="inline-block rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-primary">Saúde Integral e Humanizada</span>
+<h1 class="text-5xl font-black leading-tight tracking-tight lg:text-7xl">
+                                Medicina Integrada: <span class="text-primary">O Cuidado</span> que Você Merece
+                            </h1>
+<p class="max-w-xl text-lg text-slate-600 dark:text-slate-400">
+                                Uma abordagem holística e personalizada para a sua saúde, unindo ciência de ponta, tecnologia e empatia genuína para o seu bem-estar pleno.
+                            </p>
+</div>
+<div class="flex flex-wrap gap-4">
+<button class="rounded-xl bg-primary px-8 py-4 text-base font-bold text-white shadow-lg shadow-primary/20 hover:translate-y-[-2px] transition-all">
+                                Agendar Consulta
+                            </button>
+<button class="rounded-xl border border-primary/20 bg-white px-8 py-4 text-base font-bold text-primary hover:bg-primary/5 transition-all">
+                                Conheça Nossos Planos
+                            </button>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/5 blur-3xl"></div>
+<div class="overflow-hidden rounded-3xl shadow-2xl transition-transform hover:scale-[1.02] duration-500">
+<img class="aspect-[4/3] w-full object-cover" data-alt="Modern bright medical clinic reception and corridor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKzEkLTfczbHYiRo_ZvRlfP4iycaXKnKmduHuyqWnRk2Oo7WpoNDqVQ2l9sJAiCB9vuwxH9v-E5WAjw2mqQkZsD-qRE5YETou9bpNQbTE43Oy8aM_Nf9rxcr4c_B8dILzhmBkr0ZLMAL0vBlXF_CJyTFvClqPKMEtFN4Sf9EG9ylJihuXV6vjRARGRudxvPlmIzj9z8HnF5tzJ2ChK27u2PyntzAqyvkEora_qgdPAxCPKUxaZI0evlGIedKxlrpzQGsab4kZkpkM"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Services Grid -->
+<section class="bg-background-alt py-24" id="services">
+<div class="mx-auto max-w-7xl px-6">
+<div class="mb-16 text-center">
+<h2 class="text-3xl font-bold tracking-tight lg:text-4xl">Nossas Especialidades</h2>
+<p class="mt-4 text-slate-600 dark:text-slate-400">Tratamentos focados na individualidade bioquímica de cada paciente.</p>
+</div>
+<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+<!-- Specialty 1 -->
+<div class="group relative flex flex-col gap-4 rounded-2xl border border-primary/10 bg-background-light p-8 transition-all hover:border-primary/30 hover:shadow-xl dark:bg-background-dark">
+<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-white transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined">stethoscope</span>
+</div>
+<div>
+<h3 class="text-xl font-bold">Medicina Funcional</h3>
+<p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Identificamos e tratamos a causa raiz das disfunções crônicas através de análise sistêmica.</p>
+</div>
+</div>
+<!-- Specialty 2 -->
+<div class="group relative flex flex-col gap-4 rounded-2xl border border-primary/10 bg-background-light p-8 transition-all hover:border-primary/30 hover:shadow-xl dark:bg-background-dark">
+<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-white transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined">nutrition</span>
+</div>
+<div>
+<h3 class="text-xl font-bold">Nutrologia</h3>
+<p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Otimização metabólica e planos alimentares personalizados baseados em genética e rotina.</p>
+</div>
+</div>
+<!-- Specialty 3 -->
+<div class="group relative flex flex-col gap-4 rounded-2xl border border-primary/10 bg-background-light p-8 transition-all hover:border-primary/30 hover:shadow-xl dark:bg-background-dark">
+<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-white transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<div>
+<h3 class="text-xl font-bold">Saúde Mental</h3>
+<p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Abordagem integrativa para ansiedade, estresse e equilíbrio emocional constante.</p>
+</div>
+</div>
+<!-- Specialty 4 -->
+<div class="group relative flex flex-col gap-4 rounded-2xl border border-primary/10 bg-background-light p-8 transition-all hover:border-primary/30 hover:shadow-xl dark:bg-background-dark">
+<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-white transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined">fitness_center</span>
+</div>
+<div>
+<h3 class="text-xl font-bold">Medicina Esportiva</h3>
+<p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Foco em performance, longevidade e recuperação rápida de lesões osteomusculares.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- About Section -->
+<section class="py-24" id="about">
+<div class="mx-auto max-w-7xl px-6">
+<div class="flex flex-col gap-16 lg:flex-row lg:items-center">
+<div class="lg:w-1/2">
+<img class="rounded-3xl shadow-xl transition-all hover:scale-[1.01]" data-alt="Doctor talking caringly to elderly patient" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_1laH4RO2_IJUDa-ovvGr-SB6y6yYO4XGpByOWwAhfZN3syCDVIlPuEXvACuBY0QUer9CIRJfjEtPND4Z4SQFa1EE-yKj_s_rcVsHzChoAV_fwYFyXe3jw5arblkU9PqUL-AUjP3nU90dFKE8y6zO144MuiULSlRiI8fkNBLk5j4E3H72rwZLOGiP2aZsJ3J1HFQjaHFfyaHaWWmbCYfZF-2id42ANaOMoSnJLbQrL9GrIOlAN-TxfOcCzODbn_x1v54fImyojqY"/>
+</div>
+<div class="lg:w-1/2">
+<h2 class="text-3xl font-bold tracking-tight lg:text-4xl">Sobre a Clínica Pilar</h2>
+<p class="mt-6 text-lg leading-relaxed text-slate-600 dark:text-slate-400">
+                            A Clínica Pilar nasceu da necessidade de um atendimento médico que vá além da prescrição. Nossa filosofia é baseada na integração total do paciente, tratando não apenas sintomas, mas o indivíduo como um todo orgânico e emocional.
+                        </p>
+<div class="mt-10 grid gap-6 sm:grid-cols-2">
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary font-bold">verified_user</span>
+<div>
+<h4 class="font-bold">Excelência Técnica</h4>
+<p class="text-sm text-slate-500">Corpo clínico em constante atualização internacional.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary font-bold">favorite</span>
+<div>
+<h4 class="font-bold">Humanização</h4>
+<p class="text-sm text-slate-500">Tempo de consulta extendido para ouvir você.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Signals / Pillars -->
+<section class="bg-background-light py-24 text-charcoal">
+<div class="mx-auto max-w-7xl px-6">
+<div class="mb-16 max-w-2xl">
+<h2 class="text-3xl font-bold tracking-tight lg:text-4xl">Nossos Pilares</h2>
+<p class="mt-4 text-slate-500">O que nos define e guia cada decisão clínica em favor da sua saúde.</p>
+</div>
+<div class="grid gap-12 md:grid-cols-3"><div class="space-y-4 border-l-2 border-primary/40 pl-8">
+<span class="material-symbols-outlined text-4xl text-primary">person_search</span>
+<h3 class="text-2xl font-bold">Personalização</h3>
+<p class="text-slate-600">Não acreditamos em protocolos engessados. Cada tratamento é moldado pela sua genética e estilo de vida único.</p>
+</div>
+<div class="space-y-4 border-l-2 border-primary/40 pl-8">
+<span class="material-symbols-outlined text-4xl text-primary">science</span>
+<h3 class="text-2xl font-bold">Ciência</h3>
+<p class="text-slate-600">Baseamos nossas intervenções em evidências científicas robustas e nos avanços mais recentes da medicina moderna.</p>
+</div>
+<div class="space-y-4 border-l-2 border-primary/40 pl-8">
+<span class="material-symbols-outlined text-4xl text-primary">volunteer_activism</span>
+<h3 class="text-2xl font-bold">Empatia</h3>
+<p class="text-slate-600">O acolhimento humano é parte fundamental da cura. Criamos um ambiente seguro para o seu desenvolvimento.</p>
+</div></div>
+</div>
+</section>
+<!-- Contact & Location -->
+<section class="py-24" id="contact">
+<div class="mx-auto max-w-7xl px-6">
+<div class="grid gap-12 lg:grid-cols-2">
+<div class="rounded-3xl bg-background-alt p-8 border border-primary/10 shadow-sm">
+<h2 class="mb-8 text-2xl font-bold">Entre em Contato</h2>
+<form class="space-y-6">
+<div class="grid gap-6 sm:grid-cols-2">
+<div>
+<label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Nome</label>
+<input class="mt-1 block w-full rounded-lg border-primary/10 bg-white p-3 shadow-sm focus:border-primary focus:ring-primary dark:bg-slate-800" placeholder="Seu nome completo" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-medium text-slate-700 dark:text-slate-300">WhatsApp</label>
+<input class="mt-1 block w-full rounded-lg border-primary/10 bg-white p-3 shadow-sm focus:border-primary focus:ring-primary dark:bg-slate-800" placeholder="(00) 00000-0000" type="tel"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Mensagem</label>
+<textarea class="mt-1 block w-full rounded-lg border-primary/10 bg-white p-3 shadow-sm focus:border-primary focus:ring-primary dark:bg-slate-800" placeholder="Como podemos te ajudar?" rows="4"></textarea>
+</div>
+<button class="w-full rounded-xl bg-primary py-4 font-bold text-white shadow-lg transition-all hover:bg-primary/90" type="submit">
+                                Enviar Mensagem
+                            </button>
+</form>
+</div>
+<div class="flex flex-col gap-6">
+<div class="overflow-hidden rounded-3xl bg-slate-200 h-full min-h-[400px]">
+<img class="h-full w-full object-cover grayscale opacity-80" data-alt="Abstract map representation of a city center" data-location="São Paulo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_fRdxYSExQfaVGe9ctjn2x4shu03s1-3EM5X-s8P3vQkXu4eGXGYk9Jx7oKpqYZehBmShElRkmDWdB_G-b-6McUHrAEv0j9Jv6uYOuWvNl7kp0IAQWxaZJauUTKZXQ43SN3BDvjRdqFohmaifVzHz70W55WzxIYT5z-aT4RPxQebWqRVQ5NyFfE5cyT-CdWOoWQPIdMIWcVJqtLVJHTN4yymNJDqFHS20tUHGVAniB9qOXPf0fcV_5R58xcmY87ETR-1EAmNJoY4"/>
+</div>
+<div class="flex items-center gap-4 rounded-2xl bg-white p-6 shadow-sm dark:bg-slate-800">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">location_on</span>
+</div>
+<div>
+<h4 class="font-bold">Endereço</h4>
+<p class="text-sm text-slate-500">Av. Paulista, 1200 - Conj 42, Bela Vista, São Paulo - SP</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="border-t border-primary/10 bg-background-alt py-16">
+<div class="mx-auto max-w-7xl px-6">
+<div class="grid gap-12 md:grid-cols-4">
+<div class="col-span-2 space-y-6">
+<div class="flex items-center gap-2 text-primary dark:text-emerald-400">
+<span class="material-symbols-outlined text-3xl font-bold">medical_services</span>
+<h2 class="text-xl font-extrabold tracking-tight">Pilar <span class="font-light">Medicina</span></h2>
+</div>
+<p class="max-w-md text-sm text-slate-500">
+                        Promovendo saúde integral através da medicina baseada em evidências e do cuidado humanizado. CRM/SP 123.456 - Resp. Técnico Dr. Paulo Pilar.
+                    </p>
+<div class="flex gap-4">
+<a class="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm hover:text-primary transition-colors dark:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-lg">public</span>
+</a>
+<a class="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm hover:text-primary transition-colors dark:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-lg">mail</span>
+</a>
+</div>
+</div>
+<div class="space-y-4">
+<h4 class="font-bold uppercase tracking-wider text-xs text-primary">Links Rápidos</h4>
+<ul class="space-y-2 text-sm text-slate-500">
+<li><a class="hover:text-primary transition-colors" href="#">Termos de Uso</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Privacidade</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Perguntas Frequentes</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Trabalhe Conosco</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h4 class="font-bold uppercase tracking-wider text-xs text-primary">Contato</h4>
+<ul class="space-y-2 text-sm text-slate-500">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm">phone</span> (11) 99999-8888</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm">email</span> contato@pilar.med.br</li>
+</ul>
+</div>
+</div>
+<div class="mt-16 border-t border-primary/5 pt-8 text-center text-xs text-slate-400">
+                © 2024 Pilar Medicina Integrada. Todos os direitos reservados.
+            </div>
+</div>
+</footer>
+</body></html>
