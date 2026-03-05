@@ -104,7 +104,7 @@ app.post('/api/admin/doctors', async (req, res) => {
         upload(req, res, async (err) => {
             if (err) return res.status(500).json({ error: 'Erro no upload' });
 
-            const { name, crm, specialty, description, fullDescription, order } = req.body;
+            const { name, crm, specialty, description, fullDescription, order, accessCode } = req.body;
             if (!req.file) return res.status(400).json({ error: 'Imagem é obrigatória' });
 
             const fileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}.webp`;
@@ -120,7 +120,8 @@ app.post('/api/admin/doctors', async (req, res) => {
                     name, crm, specialty, description, fullDescription,
                     order: parseInt(order) || 0,
                     imagePath: `/uploads/${fileName}`,
-                    isActive: true
+                    isActive: true,
+                    accessCode: accessCode || null
                 }
             });
             res.json(doctor);
@@ -143,15 +144,17 @@ app.put('/api/admin/doctors/:id', async (req, res) => {
         upload(req, res, async (err) => {
             if (err) return res.status(500).json({ error: 'Erro no upload' });
 
-            const { name, crm, specialty, description, fullDescription, order, isActive } = req.body;
+            const { name, crm, specialty, description, fullDescription, order, isActive, accessCode, isProfessional } = req.body;
 
             const updateData: any = {
                 name, crm, specialty, description, fullDescription,
                 order: parseInt(order) || 0,
-                isActive: isActive === 'true' || isActive === true
+                isActive: isActive === 'true' || isActive === true,
+                accessCode: accessCode || undefined
             };
 
-            if (req.file) {
+            // Regra: Profissional não pode mudar a foto
+            if (req.file && isProfessional !== 'true') {
                 const fileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}.webp`;
                 const filePath = path.join(UPLOADS_PATH, fileName);
 
@@ -205,6 +208,22 @@ app.delete('/api/admin/doctors/:id', async (req, res) => {
         res.json({ success: true });
     } catch (error) {
         res.status(500).json({ error: 'Erro ao deletar médico' });
+    }
+});
+
+// --- ROTA DE LOGIN PROFISSIONAL ---
+app.post('/api/doctors/login', async (req, res) => {
+    try {
+        const { crm, accessCode } = req.body;
+        const doctor = await prisma.doctor.findFirst({
+            where: { crm, accessCode }
+        });
+
+        if (!doctor) return res.status(401).json({ error: 'CRM ou Código de Acesso inválidos' });
+
+        res.json({ success: true, doctorId: doctor.id, name: doctor.name });
+    } catch (error) {
+        res.status(500).json({ error: 'Erro no login profissional' });
     }
 });
 

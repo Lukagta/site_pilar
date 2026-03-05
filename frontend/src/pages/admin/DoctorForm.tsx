@@ -12,9 +12,10 @@ import {
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const DoctorForm = () => {
+const DoctorForm = ({ isProfessional = false }: { isProfessional?: boolean }) => {
     const navigate = useNavigate();
-    const { id } = useParams();
+    const { id: paramId } = useParams();
+    const id = isProfessional ? localStorage.getItem('doctorId') : paramId;
     const isEdit = !!id;
     const [loading, setLoading] = useState(false);
     const [preview, setPreview] = useState<string | null>(null);
@@ -26,7 +27,8 @@ const DoctorForm = () => {
         specialty: '',
         description: '',
         fullDescription: '',
-        order: '0'
+        order: '0',
+        accessCode: ''
     });
     const [image, setImage] = useState<File | null>(null);
 
@@ -43,7 +45,8 @@ const DoctorForm = () => {
                             specialty: data.specialty,
                             description: data.description,
                             fullDescription: data.fullDescription,
-                            order: data.order.toString()
+                            order: data.order.toString(),
+                            accessCode: data.accessCode || ''
                         });
                         setPreview(`http://localhost:3002${data.imagePath}`);
                     }
@@ -75,20 +78,21 @@ const DoctorForm = () => {
         const data = new FormData();
         Object.entries(formData).forEach(([key, value]) => data.append(key, value));
         if (image) data.append('image', image);
+        if (isProfessional) data.append('isProfessional', 'true');
 
         try {
-            const url = isEdit
+            const url = isProfessional
                 ? `http://localhost:3002/api/admin/doctors/${id}`
-                : 'http://localhost:3002/api/admin/doctors';
+                : (isEdit ? `http://localhost:3002/api/admin/doctors/${id}` : 'http://localhost:3002/api/admin/doctors');
 
             const res = await fetch(url, {
-                method: isEdit ? 'PUT' : 'POST',
+                method: isEdit || isProfessional ? 'PUT' : 'POST',
                 body: data
             });
 
             if (res.ok) {
                 setSuccess(true);
-                setTimeout(() => navigate('/admin/dashboard'), 2000);
+                setTimeout(() => navigate(isProfessional ? '/profissional/painel' : '/admin/dashboard'), 2000);
             } else {
                 alert('Erro ao salvar profissional.');
             }
@@ -146,7 +150,7 @@ const DoctorForm = () => {
                             <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-deep-blue/5">
                                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-deep-blue/40 ml-1 block mb-4">Retrato do Profissional</label>
 
-                                <div className="relative aspect-[3/4] rounded-3xl overflow-hidden bg-sand flex flex-col items-center justify-center border-2 border-dashed border-med-blue/10 hover:border-primary/40 transition-all cursor-pointer group">
+                                <div className={`relative aspect-[3/4] rounded-3xl overflow-hidden bg-sand flex flex-col items-center justify-center border-2 border-dashed border-med-blue/10 transition-all ${isProfessional ? 'cursor-not-allowed opacity-80' : 'hover:border-primary/40 cursor-pointer group'}`}>
                                     {preview ? (
                                         <img src={preview} alt="Preview" className="w-full h-full object-cover" />
                                     ) : (
@@ -155,32 +159,59 @@ const DoctorForm = () => {
                                             <p className="text-xs font-bold text-med-blue/40 leading-relaxed">Clique para fazer upload <br /> (JPEG, PNG ou WebP)</p>
                                         </div>
                                     )}
-                                    <input
-                                        type="file"
-                                        onChange={handleImageChange}
-                                        className="absolute inset-0 opacity-0 cursor-pointer"
-                                        accept="image/*"
-                                    />
+                                    {!isProfessional && (
+                                        <input
+                                            type="file"
+                                            onChange={handleImageChange}
+                                            className="absolute inset-0 opacity-0 cursor-pointer"
+                                            accept="image/*"
+                                        />
+                                    )}
                                 </div>
 
-                                <p className="mt-4 text-[10px] text-med-blue/40 font-medium leading-relaxed italic">
-                                    * A imagem será automaticamente redimensionada para 600x800 e otimizada.
-                                </p>
+                                {isProfessional ? (
+                                    <p className="mt-4 text-[10px] text-red-400 font-bold leading-relaxed italic">
+                                        * Alteração de foto permitida apenas via Administração Central.
+                                    </p>
+                                ) : (
+                                    <p className="mt-4 text-[10px] text-med-blue/40 font-medium leading-relaxed italic">
+                                        * A imagem será automaticamente redimensionada para 600x800 e otimizada.
+                                    </p>
+                                )}
                             </div>
 
-                            <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-deep-blue/5">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-deep-blue/40 ml-1 block mb-4">Ordem de Exibição</label>
-                                <div className="relative">
-                                    <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-med-blue/20" />
-                                    <input
-                                        type="number"
-                                        value={formData.order}
-                                        onChange={(e) => setFormData({ ...formData, order: e.target.value })}
-                                        className="w-full bg-champagne/30 border-none rounded-xl pl-12 pr-4 py-3 text-sm font-bold text-deep-blue"
-                                    />
+                            {!isProfessional && (
+                                <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-deep-blue/5">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-deep-blue/40 ml-1 block mb-4">Ordem de Exibição</label>
+                                    <div className="relative">
+                                        <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-med-blue/20" />
+                                        <input
+                                            type="number"
+                                            value={formData.order}
+                                            onChange={(e) => setFormData({ ...formData, order: e.target.value })}
+                                            className="w-full bg-champagne/30 border-none rounded-xl pl-12 pr-4 py-3 text-sm font-bold text-deep-blue"
+                                        />
+                                    </div>
+                                    <p className="mt-2 text-[9px] text-med-blue/30 uppercase font-black tracking-widest">Quanto menor, mais à esquerda</p>
                                 </div>
-                                <p className="mt-2 text-[9px] text-med-blue/30 uppercase font-black tracking-widest">Quanto menor, mais à esquerda</p>
-                            </div>
+                            )}
+
+                            {!isProfessional && (
+                                <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-deep-blue/5">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-deep-blue/40 ml-1 block mb-4">Código de Acesso (Profissional)</label>
+                                    <div className="relative">
+                                        <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-med-blue/20" />
+                                        <input
+                                            type="text"
+                                            value={formData.accessCode}
+                                            onChange={(e) => setFormData({ ...formData, accessCode: e.target.value })}
+                                            placeholder="Ex: SENHA123"
+                                            className="w-full bg-champagne/30 border-none rounded-xl pl-12 pr-4 py-3 text-sm font-bold text-deep-blue"
+                                        />
+                                    </div>
+                                    <p className="mt-2 text-[9px] text-med-blue/30 uppercase font-black tracking-widest">Para o médico editar o próprio perfil</p>
+                                </div>
+                            )}
                         </div>
 
                         {/* Dados Col */}

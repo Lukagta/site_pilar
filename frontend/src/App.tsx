@@ -17,6 +17,7 @@ import Dashboard from "./pages/admin/Dashboard"
 import DoctorForm from "./pages/admin/DoctorForm"
 import ClinicConfig from "./pages/admin/ClinicConfig"
 import DoctorDetails from "./pages/DoctorDetails"
+import ProfessionalLogin from "./pages/ProfessionalLogin"
 
 const HomePage = ({ config }: { config: SiteConfig | null }) => (
   <>
@@ -54,6 +55,11 @@ function AppContent() {
           <Route path="/admin/medico/novo" element={<DoctorForm />} />
           <Route path="/admin/medico/editar/:id" element={<DoctorForm />} />
           <Route path="/admin/config" element={<ClinicConfig />} />
+
+          {/* Rotas Profissional */}
+          <Route path="/profissional/login" element={<ProfessionalLogin />} />
+          <Route path="/profissional/editar" element={<DoctorForm isProfessional={true} />} />
+
           <Route path="/medico/:id" element={<DoctorDetails />} />
         </Routes>
       </main>
