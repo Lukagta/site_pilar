@@ -81,6 +81,18 @@ app.get('/api/admin/doctors', async (req, res) => {
     }
 });
 
+// Buscar um médico (Admin)
+app.get('/api/admin/doctors/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const doctor = await prisma.doctor.findUnique({ where: { id: parseInt(id) } });
+        if (!doctor) return res.status(404).json({ error: 'Médico não encontrado' });
+        res.json(doctor);
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao buscar médico' });
+    }
+});
+
 // Criar médico com upload de foto (USANDO IMPORT DINÂMICO)
 app.post('/api/admin/doctors', async (req, res) => {
     try {
@@ -116,6 +128,50 @@ app.post('/api/admin/doctors', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Erro ao criar médico' });
+    }
+});
+
+// Atualizar médico
+app.put('/api/admin/doctors/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const multer = (await import('multer')).default;
+        const sharp = (await import('sharp')).default;
+
+        const upload = multer({ storage: multer.memoryStorage() }).single('image');
+
+        upload(req, res, async (err) => {
+            if (err) return res.status(500).json({ error: 'Erro no upload' });
+
+            const { name, crm, specialty, description, fullDescription, order, isActive } = req.body;
+
+            const updateData: any = {
+                name, crm, specialty, description, fullDescription,
+                order: parseInt(order) || 0,
+                isActive: isActive === 'true' || isActive === true
+            };
+
+            if (req.file) {
+                const fileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}.webp`;
+                const filePath = path.join(UPLOADS_PATH, fileName);
+
+                await sharp(req.file.buffer)
+                    .resize(600, 800, { fit: 'cover' })
+                    .webp({ quality: 80 })
+                    .toFile(filePath);
+
+                updateData.imagePath = `/uploads/${fileName}`;
+            }
+
+            const doctor = await prisma.doctor.update({
+                where: { id: parseInt(id) },
+                data: updateData
+            });
+            res.json(doctor);
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Erro ao atualizar médico' });
     }
 });
 

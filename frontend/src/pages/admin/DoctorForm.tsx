@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
     ArrowLeft,
@@ -10,10 +10,12 @@ import {
     Hash,
     CheckCircle2
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const DoctorForm = () => {
     const navigate = useNavigate();
+    const { id } = useParams();
+    const isEdit = !!id;
     const [loading, setLoading] = useState(false);
     const [preview, setPreview] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
@@ -28,6 +30,31 @@ const DoctorForm = () => {
     });
     const [image, setImage] = useState<File | null>(null);
 
+    useEffect(() => {
+        if (isEdit) {
+            async function fetchDoctor() {
+                try {
+                    const res = await fetch(`http://localhost:3002/api/admin/doctors/${id}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        setFormData({
+                            name: data.name,
+                            crm: data.crm,
+                            specialty: data.specialty,
+                            description: data.description,
+                            fullDescription: data.fullDescription,
+                            order: data.order.toString()
+                        });
+                        setPreview(`http://localhost:3002${data.imagePath}`);
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar médico:', error);
+                }
+            }
+            fetchDoctor();
+        }
+    }, [id, isEdit]);
+
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
@@ -38,19 +65,24 @@ const DoctorForm = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!image) {
-            alert('A imagem do profissional é obrigatória.');
+
+        if (!isEdit && !image) {
+            alert('A imagem do profissional é obrigatória para novos cadastros.');
             return;
         }
 
         setLoading(true);
         const data = new FormData();
         Object.entries(formData).forEach(([key, value]) => data.append(key, value));
-        data.append('image', image);
+        if (image) data.append('image', image);
 
         try {
-            const res = await fetch('http://localhost:3002/api/admin/doctors', {
-                method: 'POST',
+            const url = isEdit
+                ? `http://localhost:3002/api/admin/doctors/${id}`
+                : 'http://localhost:3002/api/admin/doctors';
+
+            const res = await fetch(url, {
+                method: isEdit ? 'PUT' : 'POST',
                 body: data
             });
 
@@ -86,7 +118,9 @@ const DoctorForm = () => {
                         <div className="bg-deep-blue p-2 rounded-lg">
                             <Stethoscope className="w-5 h-5 text-primary" strokeWidth={2.5} />
                         </div>
-                        <h1 className="font-display text-2xl font-black text-deep-blue tracking-tighter uppercase">Novo Profissional</h1>
+                        <h1 className="font-display text-2xl font-black text-deep-blue tracking-tighter uppercase">
+                            {isEdit ? 'Editar Profissional' : 'Novo Profissional'}
+                        </h1>
                     </div>
                 </div>
 
@@ -100,7 +134,9 @@ const DoctorForm = () => {
                             <CheckCircle2 className="w-10 h-10" />
                         </div>
                         <h2 className="font-display text-3xl font-bold text-deep-blue mb-2">Sucesso!</h2>
-                        <p className="text-med-blue/60 font-medium">O profissional foi cadastrado e já está visível na Landing Page.</p>
+                        <p className="text-med-blue/60 font-medium">
+                            O profissional foi {isEdit ? 'atualizado' : 'cadastrado'} e já está visível na Landing Page.
+                        </p>
                     </motion.div>
                 ) : (
                     <form onSubmit={handleSubmit} className="grid lg:grid-cols-12 gap-8">
@@ -229,7 +265,7 @@ const DoctorForm = () => {
                                     {loading ? 'Salvando...' : (
                                         <>
                                             <Save className="w-5 h-5" />
-                                            Finalizar Cadastro do Profissional
+                                            {isEdit ? 'Salvar Alterações' : 'Finalizar Cadastro do Profissional'}
                                         </>
                                     )}
                                 </button>

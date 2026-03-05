@@ -26,8 +26,6 @@ interface Doctor {
 
 const Dashboard = () => {
     const [doctors, setDoctors] = useState<Doctor[]>([]);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
 
@@ -47,8 +45,6 @@ const Dashboard = () => {
             setDoctors(data);
         } catch (error) {
             console.error('Erro ao buscar médicos');
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -235,6 +231,7 @@ const Dashboard = () => {
                                             <td className="px-8 py-6">
                                                 <div className="flex justify-end gap-2">
                                                     <button
+                                                        onClick={() => navigate(`/admin/medico/editar/${doctor.id}`)}
                                                         className="p-3 bg-champagne hover:bg-deep-blue hover:text-white rounded-xl transition-all text-med-blue/40"
                                                         title="Editar Dados"
                                                     >

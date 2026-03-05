@@ -69,7 +69,7 @@ export function Hero() {
                             className="grid grid-cols-3 gap-8 pt-8 border-t border-med-blue/10"
                         >
                             <div className="flex flex-col">
-                                <span className="text-2xl font-display font-bold text-deep-blue">15+</span>
+                                <span className="text-2xl font-display font-bold text-deep-blue">10+</span>
                                 <span className="text-[10px] uppercase tracking-widest text-med-blue/40 font-bold">Anos de Prática</span>
                             </div>
                             <div className="flex flex-col">

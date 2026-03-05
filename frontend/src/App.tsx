@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
 import { Header } from "./components/Header"
 import { Hero } from "./components/Hero"
 import { Services } from "./components/Services"
@@ -30,8 +30,10 @@ const HomePage = ({ config }: { config: SiteConfig | null }) => (
   </>
 );
 
-function App() {
+function AppContent() {
   const [config, setConfig] = useState<SiteConfig | null>(null);
+  const location = useLocation();
+  const isAdminPath = location.pathname.startsWith('/admin');
 
   useEffect(() => {
     async function loadConfig() {
@@ -42,21 +44,28 @@ function App() {
   }, []);
 
   return (
+    <div className="min-h-screen flex flex-col" style={{ fontFamily: "'Outfit', sans-serif" }}>
+      {!isAdminPath && <Header config={config} />}
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={<HomePage config={config} />} />
+          <Route path="/admin/login" element={<Login />} />
+          <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/admin/medico/novo" element={<DoctorForm />} />
+          <Route path="/admin/medico/editar/:id" element={<DoctorForm />} />
+          <Route path="/admin/config" element={<ClinicConfig />} />
+          <Route path="/medico/:id" element={<DoctorDetails />} />
+        </Routes>
+      </main>
+      {!isAdminPath && <Footer config={config} />}
+    </div>
+  );
+}
+
+function App() {
+  return (
     <Router>
-      <div className="min-h-screen flex flex-col" style={{ fontFamily: "'Outfit', sans-serif" }}>
-        <Header config={config} />
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<HomePage config={config} />} />
-            <Route path="/admin/login" element={<Login />} />
-            <Route path="/admin/dashboard" element={<Dashboard />} />
-            <Route path="/admin/medico/novo" element={<DoctorForm />} />
-            <Route path="/admin/config" element={<ClinicConfig />} />
-            <Route path="/medico/:id" element={<DoctorDetails />} />
-          </Routes>
-        </main>
-        <Footer config={config} />
-      </div>
+      <AppContent />
     </Router>
   )
 }
