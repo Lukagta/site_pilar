@@ -12,8 +12,8 @@
 - [x] Adicionar sistema de "Ativar/Desativar" profissional (Toggle).
 - [x] Implementar edição completa dos dados de médicos já cadastrados.
 - [x] Criar sistema de acesso para profissionais (auto-edição restrita, sem alterar foto).
-- [ ] Criar seção de "Dados da Clínica" para gerenciar WhatsApp, Endereço e Redes Sociais.
-- [ ] Implementar upload e troca da Logo da clínica via Dashboard.
+- [x] Criar seção de "Dados da Clínica" para gerenciar WhatsApp, Endereço e Redes Sociais.
+- [x] Implementar upload e troca da Logo da clínica via Dashboard.
 - [ ] Criar página de descrição completa (/medico/:id) com bio e especialidades.
 
 ## 🛠 Detalhes Técnicos do Dashboard

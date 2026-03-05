@@ -52,9 +52,14 @@ export function Contact({ config }: { config: SiteConfig | null }) {
                                 </div>
                                 <div>
                                     <h4 className="font-display font-bold text-deep-blue text-lg mb-1">Telefone / WhatsApp</h4>
-                                    <p className="text-sm font-medium text-med-blue/50 leading-relaxed">
-                                        (21) 97157-1603
-                                    </p>
+                                    <a
+                                        href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-sm font-medium text-med-blue/50 leading-relaxed hover:text-primary transition-colors"
+                                    >
+                                        {whatsapp}
+                                    </a>
                                 </div>
                             </div>
 

@@ -35,11 +35,15 @@ export function Footer({ config }: { config: SiteConfig | null }) {
                             Construindo pontes entre o rigor científico e o acolhimento humanizado. Uma nova visão sobre o cuidado integral e a saúde preventiva.
                         </p>
                         <div className="flex gap-4">
-                            {[Instagram, Facebook, Send].map((Icon, i) => (
-                                <a key={i} href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/60 hover:bg-primary hover:text-deep-blue transition-all duration-500">
-                                    <Icon className="w-5 h-5" />
-                                </a>
-                            ))}
+                            <a href={config?.instagram || "#"} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/60 hover:bg-primary hover:text-deep-blue transition-all duration-500">
+                                <Instagram className="w-5 h-5" />
+                            </a>
+                            <a href={config?.facebook || "#"} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/60 hover:bg-primary hover:text-deep-blue transition-all duration-500">
+                                <Facebook className="w-5 h-5" />
+                            </a>
+                            <a href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/60 hover:bg-primary hover:text-deep-blue transition-all duration-500">
+                                <Send className="w-5 h-5" />
+                            </a>
                         </div>
                     </div>
 
@@ -50,7 +54,7 @@ export function Footer({ config }: { config: SiteConfig | null }) {
                             {['Especialidades', 'Abordagem', 'Corpo Docente', 'Contato', 'Área Administrativa'].map((item) => (
                                 <li key={item}>
                                     <a
-                                        href={item === 'Área Administrativa' ? '/admin/login' : `#${item.toLowerCase()}`}
+                                        href={item === 'Área Administrativa' ? '/admin/login' : `#${item.toLowerCase() === 'especialidades' ? 'services' : item.toLowerCase() === 'corpo docente' ? 'doctors' : item.toLowerCase()}`}
                                         className="text-white/40 hover:text-primary transition-colors text-sm font-medium flex items-center gap-2 group"
                                     >
                                         <div className="w-0 h-[1px] bg-primary group-hover:w-4 transition-all" />
@@ -73,9 +77,14 @@ export function Footer({ config }: { config: SiteConfig | null }) {
                             </div>
                             <div className="flex gap-4 items-start">
                                 <Phone className="w-5 h-5 text-primary" />
-                                <p className="text-white/40 text-sm font-medium">
+                                <a
+                                    href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-white/40 text-sm font-medium hover:text-primary transition-colors"
+                                >
                                     {whatsapp}
-                                </p>
+                                </a>
                             </div>
                             <div className="flex gap-4 items-start">
                                 <Mail className="w-5 h-5 text-primary" />
