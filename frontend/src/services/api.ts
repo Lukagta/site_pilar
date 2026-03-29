@@ -1,11 +1,18 @@
-const API_URL = 'http://localhost:3002';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3015';
+
+export { API_URL };
 
 export interface SiteConfig {
     whatsapp: string;
+    whatsapp2?: string;
+    email?: string;
     instagram: string;
     facebook: string;
     address: string;
     logo?: string;
+    nextAvailableDate?: string;
+    nextAvailableTime?: string;
+    proximaVagaVisible?: boolean;
 }
 
 export async function getSiteConfig(): Promise<SiteConfig> {
@@ -24,6 +31,9 @@ export async function getSiteConfig(): Promise<SiteConfig> {
             facebook: 'https://facebook.com',
             address: 'Av. Paulista, 1200 - Conj 42, Bela Vista, São Paulo - SP',
             logo: '',
+            nextAvailableDate: 'Hoje',
+            nextAvailableTime: '14:30h',
+            proximaVagaVisible: true
         };
     }
 }

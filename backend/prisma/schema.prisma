@@ -15,17 +15,40 @@ model SiteConfig {
   updatedAt   DateTime @updatedAt
 }
 
+model Specialty {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?  @db.Text
+  icon        String   @default("stethoscope")
+  doctors     Doctor[]
+  createdAt   DateTime @default(now())
+}
+
 model Doctor {
   id              Int      @id @default(autoincrement())
+  crm             String   @unique
   name            String
-  crm             String
-  specialty       String
+  specialty       String   // Mantido temporariamente para migração
+  specialtyId     Int?
+  specialtyRel    Specialty? @relation(fields: [specialtyId], references: [id])
   description     String   // Resumo para a Landing Page
-  fullDescription String   // Descrição completa para a página de detalhes
+  fullDescription String?  // Descrição completa para a página de detalhes
   imagePath       String
   isActive        Boolean  @default(true)
   order           Int      @default(0)
   accessCode      String?  @unique
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  posts           Post[]   // Relacionamento com Blog
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  imagePath String?
+  authorId  Int
+  author    Doctor   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

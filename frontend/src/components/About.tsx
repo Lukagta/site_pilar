@@ -1,14 +1,14 @@
 export function About() {
     return (
-        <section id="about" className="py-24">
-            <div className="mx-auto max-w-7xl px-6">
+        <section id="about" className="py-16 lg:py-20">
+            <div className="container mx-auto px-6 max-w-6xl">
                 <div className="flex flex-col gap-16 lg:flex-row lg:items-center">
                     {/* Foto */}
                     <div className="lg:w-1/2">
                         <img
                             className="rounded-3xl shadow-xl w-full transition-all hover:scale-[1.01]"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_1laH4RO2_IJUDa-ovvGr-SB6y6yYO4XGpByOWwAhfZN3syCDVIlPuEXvACuBY0QUer9CIRJfjEtPND4Z4SQFa1EE-yKj_s_rcVsHzChoAV_fwYFyXe3jw5arblkU9PqUL-AUjP3nU90dFKE8y6zO144MuiULSlRiI8fkNBLk5j4E3H72rwZLOGiP2aZsJ3J1HFQjaHFfyaHaWWmbCYfZF-2id42ANaOMoSnJLbQrL9GrIOlAN-TxfOcCzODbn_x1v54fImyojqY"
-                            alt="Médico conversando com paciente idoso"
+                            src="/about_clinic.png"
+                            alt="Recepção e consultório da Clínica Pilar - Medicina Integrada"
                         />
                     </div>
 
@@ -23,7 +23,7 @@ export function About() {
                                 <span className="material-symbols-outlined text-primary font-bold">verified_user</span>
                                 <div>
                                     <h4 className="font-bold text-charcoal">Excelência Técnica</h4>
-                                    <p className="text-sm text-slate-500">Corpo clínico em constante atualização internacional.</p>
+                                    <p className="text-sm text-slate-500">Corpo clínico em constante atualização.</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">

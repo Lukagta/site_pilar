@@ -1,9 +1,10 @@
-import { motion } from "framer-motion"
 import { Instagram, Facebook, Send, MapPin, Phone, Mail, Stethoscope } from "lucide-react"
 import type { SiteConfig } from "../services/api"
 
 export function Footer({ config }: { config: SiteConfig | null }) {
     const whatsapp = config?.whatsapp || '(21) 97157-1603';
+    const whatsapp2 = config?.whatsapp2;
+    const email = config?.email || 'contato@pilar.med.br';
     const address = config?.address || 'Rua Dr. Pereira dos Santos, 107, Sala 1113, Centro, Itaboraí - RJ';
 
     return (
@@ -13,7 +14,7 @@ export function Footer({ config }: { config: SiteConfig | null }) {
                 <span className="font-display text-[20rem] font-black text-white leading-none">PI</span>
             </div>
 
-            <div className="container mx-auto px-6 relative z-10">
+            <div className="container mx-auto px-6 max-w-6xl relative z-10">
                 <div className="grid lg:grid-cols-12 gap-16 mb-20">
 
                     {/* Brand Col */}
@@ -51,10 +52,10 @@ export function Footer({ config }: { config: SiteConfig | null }) {
                     <div className="lg:col-span-3">
                         <h4 className="font-display text-lg font-bold text-white mb-8">Navegação</h4>
                         <ul className="space-y-4">
-                            {['Especialidades', 'Abordagem', 'Corpo Docente', 'Contato', 'Área Administrativa'].map((item) => (
+                            {['Especialidades', 'Abordagem', 'Corpo Clínico', 'Contato', 'Área Administrativa'].map((item) => (
                                 <li key={item}>
                                     <a
-                                        href={item === 'Área Administrativa' ? '/admin/login' : `#${item.toLowerCase() === 'especialidades' ? 'services' : item.toLowerCase() === 'corpo docente' ? 'doctors' : item.toLowerCase()}`}
+                                        href={item === 'Área Administrativa' ? '/admin/login' : item === 'Especialidades' ? '/especialidades' : `/#${item.toLowerCase() === 'corpo clínico' ? 'doctors' : item.toLowerCase()}`}
                                         className="text-white/40 hover:text-primary transition-colors text-sm font-medium flex items-center gap-2 group"
                                     >
                                         <div className="w-0 h-[1px] bg-primary group-hover:w-4 transition-all" />
@@ -71,26 +72,46 @@ export function Footer({ config }: { config: SiteConfig | null }) {
                         <div className="space-y-6">
                             <div className="flex gap-4 items-start">
                                 <MapPin className="w-5 h-5 text-primary mt-1" />
-                                <p className="text-white/40 text-sm font-medium leading-relaxed">
-                                    {address}
-                                </p>
-                            </div>
-                            <div className="flex gap-4 items-start">
-                                <Phone className="w-5 h-5 text-primary" />
                                 <a
-                                    href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`}
+                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-white/40 text-sm font-medium hover:text-primary transition-colors"
+                                    className="text-white/40 text-sm font-medium leading-relaxed hover:text-primary transition-colors"
                                 >
-                                    {whatsapp}
+                                    {address}
                                 </a>
                             </div>
                             <div className="flex gap-4 items-start">
+                                <Phone className="w-5 h-5 text-primary" />
+                                <div className="flex flex-col gap-1">
+                                    <a
+                                        href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-white/40 text-sm font-medium hover:text-primary transition-colors"
+                                    >
+                                        {whatsapp}
+                                    </a>
+                                    {whatsapp2 && (
+                                        <a
+                                            href={`https://wa.me/${whatsapp2.replace(/\D/g, '')}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-white/40 text-sm font-medium hover:text-primary transition-colors"
+                                        >
+                                            {whatsapp2}
+                                        </a>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex gap-4 items-start">
                                 <Mail className="w-5 h-5 text-primary" />
-                                <p className="text-white/40 text-sm font-medium">
-                                    contato@pilar.med.br
-                                </p>
+                                <a 
+                                    href={`mailto:${email}`}
+                                    className="text-white/40 text-sm font-medium hover:text-primary transition-colors"
+                                >
+                                    {email}
+                                </a>
                             </div>
                         </div>
                     </div>

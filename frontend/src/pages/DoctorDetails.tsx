@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Award, CheckCircle2, Calendar, Phone, Mail } from 'lucide-react';
+import { API_URL } from '../services/api';
 
 interface Doctor {
     id: number;
@@ -9,7 +10,7 @@ interface Doctor {
     crm: string;
     specialty: string;
     description: string;
-    fullDescription: string;
+    fullDescription?: string;
     imagePath: string;
 }
 
@@ -21,10 +22,10 @@ export default function DoctorDetails() {
     useEffect(() => {
         async function fetchDoctor() {
             try {
-                const res = await fetch(`http://localhost:3002/api/admin/doctors`);
+                const res = await fetch(`${API_URL}/api/doctors/${id}`);
+                if (!res.ok) throw new Error('Médico não encontrado');
                 const data = await res.json();
-                const found = data.find((d: Doctor) => d.id === parseInt(id || '0'));
-                setDoc(found);
+                setDoc(data);
             } catch (err) {
                 console.error(err);
             } finally {
@@ -48,13 +49,15 @@ export default function DoctorDetails() {
         </div>
     );
 
+    const mainSpecialty = doc.specialty;
+
     return (
         <div className="bg-white min-h-screen font-sans">
             {/* Hero Section - Magazine Style Page Title */}
-            <section className="relative pt-32 pb-20 bg-champagne overflow-hidden">
+            <section className="relative pt-32 pb-12 bg-champagne overflow-hidden">
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-sand/30 -skew-x-12 translate-x-1/4" />
 
-                <div className="container mx-auto px-6 relative z-10">
+                <div className="container mx-auto px-6 max-w-6xl relative z-10">
                     <Link to="/" className="flex items-center gap-2 text-med-blue/40 hover:text-primary font-bold text-xs uppercase tracking-[0.2em] mb-12 transition-all group">
                         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                         Voltar ao Início
@@ -70,7 +73,7 @@ export default function DoctorDetails() {
                                 <div className="flex items-center gap-3">
                                     <div className="h-[1px] w-12 bg-primary" />
                                     <span className="text-primary font-bold uppercase tracking-[0.3em] text-[10px]">
-                                        {doc.specialty}
+                                        {mainSpecialty}
                                     </span>
                                 </div>
                                 <h1 className="font-display text-6xl md:text-8xl font-extrabold text-deep-blue leading-none tracking-tighter">
@@ -96,8 +99,8 @@ export default function DoctorDetails() {
             </section>
 
             {/* Profile Content */}
-            <section className="py-24">
-                <div className="container mx-auto px-6">
+            <section className="py-12">
+                <div className="container mx-auto px-6 max-w-6xl">
                     <div className="grid lg:grid-cols-12 gap-20">
 
                         {/* Bio Column */}
@@ -123,7 +126,7 @@ export default function DoctorDetails() {
                                     <h4 className="font-display font-bold text-deep-blue text-xl">Especialidades</h4>
                                     <ul className="space-y-3">
                                         <li className="flex items-center gap-3 text-sm font-medium text-med-blue/60">
-                                            <CheckCircle2 className="w-4 h-4 text-primary" /> {doc.specialty}
+                                            <CheckCircle2 className="w-4 h-4 text-primary" /> {mainSpecialty}
                                         </li>
                                         <li className="flex items-center gap-3 text-sm font-medium text-med-blue/60">
                                             <CheckCircle2 className="w-4 h-4 text-primary" /> Medicina Integrativa
@@ -156,7 +159,7 @@ export default function DoctorDetails() {
                             >
                                 <div className="aspect-[3/4] rounded-[3rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(11,42,74,0.15)] bg-sand">
                                     <img
-                                        src={`http://localhost:3002${doc.imagePath}`}
+                                        src={`${API_URL}${doc.imagePath}`}
                                         alt={doc.name}
                                         className="w-full h-full object-cover"
                                     />
@@ -179,16 +182,19 @@ export default function DoctorDetails() {
                                             <span className="text-sm font-bold text-deep-blue">contato@pilar.med.br</span>
                                         </div>
                                     </div>
-                                    <a
-                                        href="/agendar"
-                                        className="block w-full bg-deep-blue hover:bg-primary text-white text-center py-5 rounded-2xl font-bold text-sm shadow-lg shadow-deep-blue/10 transition-all transform hover:-translate-y-1"
-                                    >
-                                        Marcar Consulta Agora
-                                    </a>
+                                    <div className="mt-8">
+                                        <a
+                                            href="https://sistema.clinicapilar.com.br/agendar"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="w-full bg-deep-blue text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 transition-all hover:bg-primary shadow-lg shadow-deep-blue/20"
+                                        >
+                                            Marcar Consulta Agora
+                                        </a>
+                                    </div>
                                 </div>
                             </motion.div>
                         </div>
-
                     </div>
                 </div>
             </section>

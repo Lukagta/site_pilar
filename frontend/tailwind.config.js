@@ -28,7 +28,7 @@ export default {
       },
       fontFamily: {
         display: ["Outfit", "sans-serif"],
-        sans: ["Inter", "sans-serif"],
+        sans: ["DM Sans", "sans-serif"],
       },
     },
   },

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion } from "framer-motion"
-import { Users, ArrowRight, Award } from "lucide-react"
+import { ArrowRight, Award } from "lucide-react"
 import { Link } from "react-router-dom"
+import { API_URL } from '../services/api';
 
 interface Doctor {
     id: number;
@@ -19,7 +20,7 @@ export const Doctors = () => {
     useEffect(() => {
         async function fetchDoctors() {
             try {
-                const res = await fetch('http://localhost:3002/api/doctors');
+                const res = await fetch(`${API_URL}/api/doctors`);
                 const data = await res.json();
                 setDoctors(data);
             } catch (error) {
@@ -34,11 +35,11 @@ export const Doctors = () => {
     if (loading || doctors.length === 0) return null;
 
     return (
-        <section id="doctors" className="py-32 bg-white relative overflow-hidden">
+        <section id="doctors" className="py-16 lg:py-20 bg-white relative overflow-hidden">
             {/* Background Aesthetic */}
             <div className="absolute top-0 left-0 w-full h-1/2 bg-champagne/30 -skew-y-3 origin-top-left" />
 
-            <div className="container mx-auto px-6 relative z-10">
+            <div className="container mx-auto px-6 max-w-6xl relative z-10">
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
                     <div className="max-w-2xl">
                         <motion.div
@@ -53,9 +54,9 @@ export const Doctors = () => {
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="font-display text-5xl md:text-6xl font-extrabold text-deep-blue leading-tight"
+                            className="font-display text-4xl md:text-5xl lg:text-6xl font-extrabold text-deep-blue leading-tight"
                         >
-                            Corpo <span className="text-primary italic font-light">Docente.</span>
+                            Corpo <span className="text-primary italic font-light">Clínico.</span>
                         </motion.h2>
                     </div>
                     <motion.p
@@ -79,7 +80,7 @@ export const Doctors = () => {
                             {/* Card Container with Depth */}
                             <div className="relative aspect-[3/4] rounded-[2.5rem] overflow-hidden bg-sand shadow-[0_30px_60px_-15px_rgba(11,42,74,0.1)] transition-all duration-700 group-hover:-translate-y-4 group-hover:shadow-[0_50px_80px_-20px_rgba(11,42,74,0.2)]">
                                 <img
-                                    src={`http://localhost:3002${doctor.imagePath}`}
+                                    src={`${API_URL}${doctor.imagePath}`}
                                     alt={doctor.name}
                                     className="w-full h-full object-cover grayscale-[0.2] transition-all duration-1000 group-hover:scale-110 group-hover:grayscale-0"
                                 />

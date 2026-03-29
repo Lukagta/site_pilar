@@ -11,6 +11,7 @@ import {
     CheckCircle2
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { API_URL } from '../../services/api';
 
 const DoctorForm = ({ isProfessional = false }: { isProfessional?: boolean }) => {
     const navigate = useNavigate();
@@ -24,7 +25,7 @@ const DoctorForm = ({ isProfessional = false }: { isProfessional?: boolean }) =>
     const [formData, setFormData] = useState({
         name: '',
         crm: '',
-        specialty: '',
+        specialty: '', // Campo livre
         description: '',
         fullDescription: '',
         order: '0',
@@ -33,12 +34,12 @@ const DoctorForm = ({ isProfessional = false }: { isProfessional?: boolean }) =>
     const [image, setImage] = useState<File | null>(null);
 
     useEffect(() => {
-        if (isEdit) {
-            async function fetchDoctor() {
+        const loadInitialData = async () => {
+            if (isEdit) {
                 try {
-                    const res = await fetch(`http://localhost:3002/api/admin/doctors/${id}`);
-                    if (res.ok) {
-                        const data = await res.json();
+                    const res = await fetch(`${API_URL}/api/admin/doctors/${id}`);
+                    const data = await res.json();
+                    if (data) {
                         setFormData({
                             name: data.name,
                             crm: data.crm,
@@ -48,15 +49,16 @@ const DoctorForm = ({ isProfessional = false }: { isProfessional?: boolean }) =>
                             order: data.order.toString(),
                             accessCode: data.accessCode || ''
                         });
-                        setPreview(`http://localhost:3002${data.imagePath}`);
+                        setPreview(`${API_URL}${data.imagePath}`);
                     }
-                } catch (error) {
-                    console.error('Erro ao carregar médico:', error);
+                } catch (err) {
+                    console.error("Erro ao carregar médico");
                 }
             }
-            fetchDoctor();
-        }
-    }, [id, isEdit]);
+        };
+
+        loadInitialData();
+    }, [isEdit, id]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -82,8 +84,8 @@ const DoctorForm = ({ isProfessional = false }: { isProfessional?: boolean }) =>
 
         try {
             const url = isProfessional
-                ? `http://localhost:3002/api/admin/doctors/${id}`
-                : (isEdit ? `http://localhost:3002/api/admin/doctors/${id}` : 'http://localhost:3002/api/admin/doctors');
+                ? `${API_URL}/api/admin/doctors/${id}`
+                : (isEdit ? `${API_URL}/api/admin/doctors/${id}` : `${API_URL}/api/admin/doctors`);
 
             const res = await fetch(url, {
                 method: isEdit || isProfessional ? 'PUT' : 'POST',
@@ -105,7 +107,7 @@ const DoctorForm = ({ isProfessional = false }: { isProfessional?: boolean }) =>
     };
 
     return (
-        <div className="min-h-screen bg-champagne p-12">
+        <div className={`${isProfessional ? 'min-h-screen bg-champagne' : ''} p-12`}>
             <div className="max-w-4xl mx-auto">
 
                 {/* Header de Ação */}
@@ -234,7 +236,7 @@ const DoctorForm = ({ isProfessional = false }: { isProfessional?: boolean }) =>
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-deep-blue/40 ml-1">CRM + Estado</label>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-deep-blue/40 ml-1">CRM (Apenas Números)</label>
                                         <div className="relative">
                                             <FileText className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-med-blue/20" />
                                             <input
@@ -242,7 +244,7 @@ const DoctorForm = ({ isProfessional = false }: { isProfessional?: boolean }) =>
                                                 required
                                                 value={formData.crm}
                                                 onChange={(e) => setFormData({ ...formData, crm: e.target.value })}
-                                                placeholder="Ex: CRM/RJ 123.456"
+                                                placeholder="Ex: 123456"
                                                 className="w-full bg-champagne/50 border-none rounded-2xl pl-12 pr-6 py-4 text-deep-blue font-medium placeholder:text-med-blue/20 focus:ring-2 focus:ring-primary/20 transition-all"
                                             />
                                         </div>
@@ -250,7 +252,7 @@ const DoctorForm = ({ isProfessional = false }: { isProfessional?: boolean }) =>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-deep-blue/40 ml-1">Especialidade / Título</label>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-deep-blue/40 ml-1">Especialidade Principal</label>
                                     <div className="relative">
                                         <Award className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-med-blue/20" />
                                         <input
@@ -258,10 +260,13 @@ const DoctorForm = ({ isProfessional = false }: { isProfessional?: boolean }) =>
                                             required
                                             value={formData.specialty}
                                             onChange={(e) => setFormData({ ...formData, specialty: e.target.value })}
-                                            placeholder="Ex: Médico Nutrologista & Medicina Integrativa"
+                                            placeholder="Ex: Cardiologia"
                                             className="w-full bg-champagne/50 border-none rounded-2xl pl-12 pr-6 py-4 text-deep-blue font-medium placeholder:text-med-blue/20 focus:ring-2 focus:ring-primary/20 transition-all"
                                         />
                                     </div>
+                                    <p className="mt-2 text-[9px] text-med-blue/30 uppercase font-black tracking-widest">
+                                        * Digite a especialidade conforme deve aparecer no site.
+                                    </p>
                                 </div>
 
                                 <div className="space-y-2">

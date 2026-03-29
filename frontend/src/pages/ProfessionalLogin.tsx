@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Stethoscope, Key, FileText, ArrowRight } from 'lucide-react';
+import { API_URL } from '../services/api';
 
 const ProfessionalLogin = () => {
     const [crm, setCrm] = useState('');
@@ -16,7 +17,7 @@ const ProfessionalLogin = () => {
         setError('');
 
         try {
-            const res = await fetch('http://localhost:3002/api/doctors/login', {
+            const res = await fetch(`${API_URL}/api/doctors/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ crm, accessCode })
@@ -26,7 +27,7 @@ const ProfessionalLogin = () => {
                 const data = await res.json();
                 localStorage.setItem('doctorId', data.doctorId.toString());
                 localStorage.setItem('doctorName', data.name);
-                navigate('/profissional/editar');
+                navigate('/profissional/painel');
             } else {
                 setError('CRM ou Código de Acesso inválidos.');
             }
@@ -63,8 +64,8 @@ const ProfessionalLogin = () => {
                                 <input
                                     type="text"
                                     value={crm}
-                                    onChange={(e) => setCrm(e.target.value)}
-                                    placeholder="Ex: CRM/RJ 123456"
+                                    onChange={(e) => setCrm(e.target.value.replace(/\D/g, ''))}
+                                    placeholder="Ex: 123456"
                                     className="w-full bg-champagne/50 border-none rounded-2xl pl-12 pr-6 py-4 text-deep-blue font-medium placeholder:text-med-blue/20 focus:ring-2 focus:ring-primary/20 transition-all"
                                     required
                                 />

@@ -4,9 +4,11 @@
 
 @layer base {
   body {
-    font-family: 'Inter', sans-serif;
-    background-color: #F2F4F6; /* gray-light */
-    color: #0B2A4A; /* deep-blue */
+    font-family: 'DM Sans', sans-serif;
+    background-color: #F2F4F6;
+    /* gray-light */
+    color: #0B2A4A;
+    /* deep-blue */
     -webkit-font-smoothing: antialiased;
   }
 }

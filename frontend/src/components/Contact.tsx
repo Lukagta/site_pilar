@@ -2,15 +2,17 @@ import { motion } from "framer-motion"
 import { Send, MapPin, Phone, Mail, Calendar } from "lucide-react"
 import type { SiteConfig } from "../services/api";
 
-const AGENDAMENTO_URL = 'http://localhost:5173/agendar';
+const AGENDAMENTO_URL = 'https://sistema.clinicapilar.com.br/agendar';
 
 export function Contact({ config }: { config: SiteConfig | null }) {
     const whatsapp = config?.whatsapp || '21971571603';
+    const whatsapp2 = config?.whatsapp2;
+    const email = config?.email || 'contato@pilar.med.br';
     const address = config?.address || 'Rua Dr. Pereira dos Santos, 107, Sala 1113, Centro, Itaboraí - RJ';
 
     return (
-        <section id="contact" className="py-32 bg-sand/30">
-            <div className="container mx-auto px-6">
+        <section id="contact" className="py-16 lg:py-20 bg-sand/30">
+            <div className="container mx-auto px-6 max-w-6xl">
                 <div className="grid lg:grid-cols-12 gap-16 items-start">
 
                     {/* Infos Col */}
@@ -24,7 +26,7 @@ export function Contact({ config }: { config: SiteConfig | null }) {
                                 <div className="w-12 h-[1px] bg-primary" />
                                 <span className="text-primary font-bold uppercase tracking-[0.2em] text-[10px]">Canais de Acesso</span>
                             </motion.div>
-                            <h2 className="font-display text-5xl font-extrabold text-deep-blue mb-6">
+                            <h2 className="font-display text-4xl md:text-5xl lg:text-5xl font-extrabold text-deep-blue mb-6">
                                 Vamos iniciar um <br />
                                 <span className="text-primary italic font-light">diálogo.</span>
                             </h2>
@@ -40,9 +42,14 @@ export function Contact({ config }: { config: SiteConfig | null }) {
                                 </div>
                                 <div>
                                     <h4 className="font-display font-bold text-deep-blue text-lg mb-1">Localização</h4>
-                                    <p className="text-sm font-medium text-med-blue/50 leading-relaxed">
+                                    <a
+                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-sm font-medium text-med-blue/50 leading-relaxed hover:text-primary transition-colors block mt-1"
+                                    >
                                         {address}
-                                    </p>
+                                    </a>
                                 </div>
                             </div>
 
@@ -50,7 +57,7 @@ export function Contact({ config }: { config: SiteConfig | null }) {
                                 <div className="w-14 h-14 rounded-2xl bg-white shadow-lg flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500">
                                     <Phone className="w-6 h-6" />
                                 </div>
-                                <div>
+                                <div className="flex flex-col gap-2">
                                     <h4 className="font-display font-bold text-deep-blue text-lg mb-1">Telefone / WhatsApp</h4>
                                     <a
                                         href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`}
@@ -60,6 +67,16 @@ export function Contact({ config }: { config: SiteConfig | null }) {
                                     >
                                         {whatsapp}
                                     </a>
+                                    {whatsapp2 && (
+                                        <a
+                                            href={`https://wa.me/${whatsapp2.replace(/\D/g, '')}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-sm font-medium text-med-blue/50 leading-relaxed hover:text-primary transition-colors"
+                                        >
+                                            {whatsapp2}
+                                        </a>
+                                    )}
                                 </div>
                             </div>
 
@@ -69,9 +86,12 @@ export function Contact({ config }: { config: SiteConfig | null }) {
                                 </div>
                                 <div>
                                     <h4 className="font-display font-bold text-deep-blue text-lg mb-1">E-mail</h4>
-                                    <p className="text-sm font-medium text-med-blue/50 leading-relaxed">
-                                        contato@pilar.med.br
-                                    </p>
+                                    <a 
+                                        href={`mailto:${email}`}
+                                        className="text-sm font-medium text-med-blue/50 leading-relaxed hover:text-primary transition-colors"
+                                    >
+                                        {email}
+                                    </a>
                                 </div>
                             </div>
                         </div>

@@ -18,11 +18,17 @@ import DoctorForm from "./pages/admin/DoctorForm"
 import ClinicConfig from "./pages/admin/ClinicConfig"
 import DoctorDetails from "./pages/DoctorDetails"
 import ProfessionalLogin from "./pages/ProfessionalLogin"
+import ProfessionalDashboard from "./pages/ProfessionalDashboard"
+import SpecialtiesManager from "./pages/admin/SpecialtiesManager"
+import BlogManager from "./pages/admin/BlogManager"
+import BlogPostForm from "./pages/admin/BlogPostForm"
+import PostDetails from "./pages/PostDetails"
+import { AdminLayout } from "./components/AdminLayout"
+import WidgetConfig from "./pages/admin/WidgetConfig"
 
 const HomePage = ({ config }: { config: SiteConfig | null }) => (
   <>
     <Hero />
-    <Services />
     <About />
     <Doctors />
     <Blog />
@@ -34,7 +40,7 @@ const HomePage = ({ config }: { config: SiteConfig | null }) => (
 function AppContent() {
   const [config, setConfig] = useState<SiteConfig | null>(null);
   const location = useLocation();
-  const isAdminPath = location.pathname.startsWith('/admin');
+  const isAdminPath = location.pathname.startsWith('/admin') && location.pathname !== '/admin/login';
 
   useEffect(() => {
     async function loadConfig() {
@@ -46,24 +52,39 @@ function AppContent() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ fontFamily: "'Outfit', sans-serif" }}>
-      {!isAdminPath && <Header config={config} />}
+      {!isAdminPath && location.pathname !== '/admin/login' && <Header config={config} />}
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<HomePage config={config} />} />
+          <Route path="/especialidades" element={<Services />} />
           <Route path="/admin/login" element={<Login />} />
-          <Route path="/admin/dashboard" element={<Dashboard />} />
-          <Route path="/admin/medico/novo" element={<DoctorForm />} />
-          <Route path="/admin/medico/editar/:id" element={<DoctorForm />} />
-          <Route path="/admin/config" element={<ClinicConfig />} />
+          
+          {/* Dashboard Administrativo com Layout Persistente */}
+          <Route element={<AdminLayout />}>
+            <Route path="/admin/dashboard" element={<Dashboard />} />
+            <Route path="/admin/medico/novo" element={<DoctorForm />} />
+            <Route path="/admin/medico/editar/:id" element={<DoctorForm />} />
+            <Route path="/admin/config" element={<ClinicConfig />} />
+            <Route path="/admin/widget" element={<WidgetConfig />} />
+            <Route path="/admin/especialidades" element={<SpecialtiesManager />} />
+            <Route path="/admin/blog" element={<BlogManager />} />
+            <Route path="/admin/blog/novo" element={<BlogPostForm />} />
+            <Route path="/admin/blog/editar/:id" element={<BlogPostForm />} />
+          </Route>
 
           {/* Rotas Profissional */}
           <Route path="/profissional/login" element={<ProfessionalLogin />} />
+          <Route path="/profissional/painel" element={<ProfessionalDashboard />} />
           <Route path="/profissional/editar" element={<DoctorForm isProfessional={true} />} />
+          <Route path="/profissional/blog" element={<BlogManager isProfessional={true} />} />
+          <Route path="/profissional/blog/novo" element={<BlogPostForm isProfessional={true} />} />
+          <Route path="/profissional/blog/editar/:id" element={<BlogPostForm isProfessional={true} />} />
 
           <Route path="/medico/:id" element={<DoctorDetails />} />
+          <Route path="/blog/:id" element={<PostDetails />} />
         </Routes>
       </main>
-      {!isAdminPath && <Footer config={config} />}
+      {!isAdminPath && location.pathname !== '/admin/login' && <Footer config={config} />}
     </div>
   );
 }

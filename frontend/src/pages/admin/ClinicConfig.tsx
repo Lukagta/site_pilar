@@ -9,10 +9,12 @@ import {
     Instagram,
     Facebook,
     Image as ImageIcon,
-    CheckCircle2
+    CheckCircle2,
+    Phone,
+    Mail
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { getSiteConfig } from '../../services/api';
+import { getSiteConfig, API_URL } from '../../services/api';
 
 const ClinicConfig = () => {
     const navigate = useNavigate();
@@ -22,10 +24,12 @@ const ClinicConfig = () => {
 
     const [configs, setConfigs] = useState({
         whatsapp: '',
+        whatsapp2: '',
+        email: '',
         address: '',
         instagram: '',
         facebook: '',
-        logo: ''
+        logo: '',
     });
 
     useEffect(() => {
@@ -34,13 +38,15 @@ const ClinicConfig = () => {
             if (data) {
                 setConfigs({
                     whatsapp: data.whatsapp || '',
+                    whatsapp2: data.whatsapp2 || '',
+                    email: data.email || '',
                     address: data.address || '',
                     instagram: data.instagram || '',
                     facebook: data.facebook || '',
-                    logo: data.logo || ''
+                    logo: data.logo || '',
                 });
                 if (data.logo) {
-                    setLogoPreview(`http://localhost:3002${data.logo}`);
+                    setLogoPreview(`${API_URL}${data.logo}`);
                 }
             }
         }
@@ -56,13 +62,13 @@ const ClinicConfig = () => {
 
         setLoading(true);
         try {
-            const res = await fetch('http://localhost:3002/api/admin/config/logo', {
+            const res = await fetch(`${API_URL}/api/admin/config/logo`, {
                 method: 'POST',
                 body: formData
             });
             const data = await res.json();
             if (data.success) {
-                setLogoPreview(`http://localhost:3002${data.logoPath}`);
+                setLogoPreview(`${API_URL}${data.logoPath}`);
                 setConfigs(prev => ({ ...prev, logo: data.logoPath }));
                 alert('Logo atualizada com sucesso!');
             }
@@ -79,13 +85,15 @@ const ClinicConfig = () => {
 
         const configArray = [
             { key: 'whatsapp', value: configs.whatsapp },
+            { key: 'whatsapp2', value: configs.whatsapp2 },
+            { key: 'email', value: configs.email },
             { key: 'address', value: configs.address },
             { key: 'instagram', value: configs.instagram },
             { key: 'facebook', value: configs.facebook }
         ];
 
         try {
-            const res = await fetch('http://localhost:3002/api/admin/config', {
+            const res = await fetch(`${API_URL}/api/admin/config`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ configs: configArray })
@@ -103,9 +111,9 @@ const ClinicConfig = () => {
     };
 
     return (
-        <div className="min-h-screen bg-champagne p-12">
+        <div className="p-4 md:p-12">
             <div className="max-w-4xl mx-auto">
-                <div className="flex items-center justify-between mb-12">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                     <button
                         onClick={() => navigate('/admin/dashboard')}
                         className="flex items-center gap-2 text-med-blue/40 hover:text-deep-blue font-bold text-sm transition-all group"
@@ -125,7 +133,7 @@ const ClinicConfig = () => {
                 <div className="grid lg:grid-cols-12 gap-8">
                     {/* Logo Section */}
                     <div className="lg:col-span-4 space-y-6">
-                        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-deep-blue/5">
+                        <div className="bg-white rounded-3xl md:rounded-[2.5rem] p-6 md:p-8 shadow-sm border border-deep-blue/5">
                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-deep-blue/40 ml-1 block mb-4">Identidade Visual (Logo)</label>
                             <div className="relative aspect-video rounded-2xl overflow-hidden bg-sand flex flex-col items-center justify-center border-2 border-dashed border-med-blue/10 hover:border-primary/40 transition-all cursor-pointer group">
                                 {logoPreview ? (
@@ -149,17 +157,46 @@ const ClinicConfig = () => {
 
                     {/* Configs Column */}
                     <div className="lg:col-span-8">
-                        <form onSubmit={handleSaveConfigs} className="bg-white rounded-[3rem] p-10 shadow-sm border border-deep-blue/5 space-y-8">
+                        <form onSubmit={handleSaveConfigs} className="bg-white rounded-3xl md:rounded-[3rem] p-6 md:p-10 shadow-sm border border-deep-blue/5 space-y-8">
                             <div className="grid gap-6">
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-deep-blue/40 ml-1">WhatsApp (Principal)</label>
+                                        <div className="relative">
+                                            <MessageCircle className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-med-blue/20" />
+                                            <input
+                                                type="text"
+                                                value={configs.whatsapp}
+                                                onChange={(e) => setConfigs({ ...configs, whatsapp: e.target.value })}
+                                                placeholder="Ex: (21) 97157-1603"
+                                                className="w-full bg-champagne/50 border-none rounded-2xl pl-12 pr-6 py-4 text-deep-blue font-medium placeholder:text-med-blue/20 focus:ring-2 focus:ring-primary/20 transition-all"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-deep-blue/40 ml-1">WhatsApp (Secundário)</label>
+                                        <div className="relative">
+                                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-med-blue/20" />
+                                            <input
+                                                type="text"
+                                                value={configs.whatsapp2}
+                                                onChange={(e) => setConfigs({ ...configs, whatsapp2: e.target.value })}
+                                                placeholder="Ex: (21) 97299-2420"
+                                                className="w-full bg-champagne/50 border-none rounded-2xl pl-12 pr-6 py-4 text-deep-blue font-medium placeholder:text-med-blue/20 focus:ring-2 focus:ring-primary/20 transition-all"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-deep-blue/40 ml-1">WhatsApp de Atendimento</label>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-deep-blue/40 ml-1">E-mail de Contato</label>
                                     <div className="relative">
-                                        <MessageCircle className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-med-blue/20" />
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-med-blue/20" />
                                         <input
-                                            type="text"
-                                            value={configs.whatsapp}
-                                            onChange={(e) => setConfigs({ ...configs, whatsapp: e.target.value })}
-                                            placeholder="Ex: (21) 97157-1603"
+                                            type="email"
+                                            value={configs.email}
+                                            onChange={(e) => setConfigs({ ...configs, email: e.target.value })}
+                                            placeholder="Ex: pilargestaomedica@gmail.com"
                                             className="w-full bg-champagne/50 border-none rounded-2xl pl-12 pr-6 py-4 text-deep-blue font-medium placeholder:text-med-blue/20 focus:ring-2 focus:ring-primary/20 transition-all"
                                         />
                                     </div>

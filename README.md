@@ -21,7 +21,7 @@ cd backend
 npm install
 npm run dev
 ```
-A API rodará na porta **3002**.
+A API rodará na porta **3015**.
 
 ### 3. Frontend
 ```bash
@@ -29,12 +29,12 @@ cd frontend
 npm install
 npm run dev
 ```
-O site estará acessível em [http://localhost:5173](http://localhost:5173).
+O site estará acessível em [http://localhost:5185](http://localhost:5185).
 
 ## 🔐 Painel Administrativo
 
 Acesse a área administrativa para gerenciar os médicos do corpo clínico:
-- **URL**: [http://localhost:5173/admin/login](http://localhost:5173/admin/login)
+- **URL**: [http://localhost:5185/admin/login](http://localhost:5185/admin/login)
 - **Credenciais de Teste**: `admin` / `admin123`
 
 ## 📦 Versionamento
