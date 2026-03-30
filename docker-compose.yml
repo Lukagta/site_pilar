@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: site_pilar_backend
+    ports:
+      - "3015:3015"
+    volumes:
+      - ./backend/prisma/dev.db:/app/prisma/dev.db
+      - ./backend/images:/app/images
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: "http://72.61.38.9:3015"
+    container_name: site_pilar_frontend
+    ports:
+      - "5185:80"
+    restart: always
+    depends_on:
+      - backend
