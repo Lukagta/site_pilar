@@ -8,6 +8,7 @@ dist/
 dist-ssr/
 frontend/dist/
 backend/dist/
+skill_frontend/
 
 # Env e Segredo
 .env
