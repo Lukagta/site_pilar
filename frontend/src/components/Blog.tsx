@@ -24,6 +24,7 @@ export function Blog() {
         async function fetchPosts() {
             try {
                 const res = await fetch(`${API_URL}/api/posts`);
+                if (!res.ok) throw new Error('Erro ao buscar posts');
                 const data = await res.json();
                 setPosts(data);
             } catch (error) {

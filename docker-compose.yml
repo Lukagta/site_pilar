@@ -1,17 +1,41 @@
 version: '3.8'
 
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: site_pilar_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pilar_site
+      POSTGRES_PASSWORD: pilar_site_pass
+      POSTGRES_DB: pilar_site_db
+    volumes:
+      - site_pilar_postgres_data:/var/lib/postgresql/data
+    networks:
+      - site_pilar_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pilar_site -d pilar_site_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: site_pilar_backend
-    ports:
-      - "3015:3015"
-    volumes:
-      - ./backend/prisma/dev.db:/app/prisma/dev.db
-      - ./backend/images:/app/images
     restart: always
+    environment:
+      DATABASE_URL: postgresql://pilar_site:pilar_site_pass@site_pilar_postgres:5432/pilar_site_db
+      PORT: 3015
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend/images:/app/images
+    networks:
+      - site_pilar_net
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.site_pilar_backend.rule=Host(`api.clinicapilar.com.br`)"
@@ -31,9 +55,18 @@ services:
     restart: always
     depends_on:
       - backend
+    networks:
+      - site_pilar_net
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.site_pilar_frontend.rule=Host(`clinicapilar.com.br`) || Host(`www.clinicapilar.com.br`)"
       - "traefik.http.routers.site_pilar_frontend.entrypoints=websecure"
       - "traefik.http.routers.site_pilar_frontend.tls.certresolver=letsencrypt"
       - "traefik.http.services.site_pilar_frontend.loadbalancer.server.port=80"
+
+networks:
+  site_pilar_net:
+    driver: bridge
+
+volumes:
+  site_pilar_postgres_data:

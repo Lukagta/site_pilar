@@ -3,6 +3,11 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { sendEmail } from './utils/email.js';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'pilar-super-secret-key-123';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,6 +28,28 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 const prisma = new PrismaClient();
+
+// Seed de Administrador Padrão
+async function seedAdmin() {
+    try {
+        const count = await prisma.adminUser.count();
+        if (count === 0) {
+            const hashedPassword = await bcrypt.hash('admin123', 10);
+            await prisma.adminUser.create({
+                data: {
+                    email: process.env.ADMIN_EMAIL || 'admin@clinicapilar.com.br',
+                    password: hashedPassword,
+                    name: 'Administrador Pilar'
+                }
+            });
+            console.log('--- USUÁRIO ADMIN PADRÃO CRIADO (Aconselhamos alterar a senha pelo painel no futuro) ---');
+        }
+    } catch (e) {
+        console.error('Erro ao seedar admin:', e);
+    }
+}
+seedAdmin();
+
 // --- ROTAS DE ESPECIALIDADES ---
 
 // Listar todas
@@ -138,6 +165,82 @@ app.get('/api/config', async (req, res) => {
 });
 
 // --- ROTAS DE MÉDICOS ---
+
+// --- AUTENTICAÇÃO E RECUPERAÇÃO DE SENHA DO ADMIN ---
+app.post('/api/admin/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const admin = await prisma.adminUser.findFirst({
+            where: {
+                OR: [
+                    { email: username },
+                    { name: username }
+                ]
+            }
+        });
+        
+        if (!admin) return res.status(401).json({ error: 'Credenciais inválidas' });
+        
+        const validPassword = await bcrypt.compare(password, admin.password);
+        if (!validPassword) return res.status(401).json({ error: 'Credenciais inválidas' });
+        
+        const token = jwt.sign({ id: admin.id, role: 'admin' }, JWT_SECRET, { expiresIn: '24h' });
+        res.json({ success: true, token, email: admin.email, name: admin.name });
+    } catch (e) {
+        res.status(500).json({ error: 'Erro no login' });
+    }
+});
+
+app.post('/api/admin/forgot-password', async (req, res) => {
+    try {
+        const { email } = req.body;
+        const admin = await prisma.adminUser.findUnique({ where: { email } });
+        
+        // Simular sucesso para não expor e-mails existentes, mas falhar silenciosamente.
+        if (!admin) return res.json({ success: true, message: 'Se o e-mail constar na base, uma senha será enviada.' });
+        
+        const tempPassword = Math.random().toString(36).slice(-8);
+        const hashedPassword = await bcrypt.hash(tempPassword, 10);
+        
+        await prisma.adminUser.update({
+            where: { id: admin.id },
+            data: { password: hashedPassword }
+        });
+        
+        const html = `
+            <h2>Recuperação de Senha - Pilar Medicina Integrada</h2>
+            <p>Olá ${admin.name},</p>
+            <p>Uma redefinição de senha foi solicitada para o seu painel gerencial.</p>
+            <p>Sua nova senha provisória é: <strong>${tempPassword}</strong></p>
+            <p>Por questões de segurança, recomendamos que você altere esta senha assim que acessar o sistema.</p>
+            <br>
+            <p>Atenciosamente,<br>Equipe Pilar</p>
+        `;
+        
+        const emailSent = await sendEmail(admin.email, 'Sua Nova Senha Provísória - Painel Pilar', html);
+        if (!emailSent) return res.status(500).json({ error: 'Falha ao enviar e-mail pelo servidor SMTP.' });
+        
+        res.json({ success: true, message: 'Senha provisória enviada para o seu e-mail.' });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Erro interno ao processar redefinição.' });
+    }
+});
+
+// Middleware que exige Token para TODAS as rotas seguintes de admin
+app.use('/api/admin', (req: any, res: any, next: any) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: 'Acesso Restrito: Token Ausente' });
+
+    const token = authHeader.split(' ')[1];
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.adminId = (decoded as any).id;
+        next();
+    } catch (err) {
+        return res.status(401).json({ error: 'Token Inválido ou Expirado' });
+    }
+});
 
 // Listar médicos (Público - apenas ativos)
 app.get('/api/doctors', async (req, res) => {

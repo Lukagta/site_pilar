@@ -21,6 +21,7 @@ export const Doctors = () => {
         async function fetchDoctors() {
             try {
                 const res = await fetch(`${API_URL}/api/doctors`);
+                if (!res.ok) throw new Error('Erro ao buscar médicos');
                 const data = await res.json();
                 setDoctors(data);
             } catch (error) {

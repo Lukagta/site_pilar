@@ -33,6 +33,7 @@ export function AdminLayout() {
 
     const handleLogout = () => {
         localStorage.removeItem('isAdmin');
+        localStorage.removeItem('adminToken');
         navigate('/admin/login');
     };
 

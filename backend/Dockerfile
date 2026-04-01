@@ -1,12 +1,10 @@
-FROM node:20-slim
+FROM node:20-alpine
 
 # Instalar openssl para o Prisma funcionar corretamente
-RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
-
+RUN apk add --no-cache openssl
 
 WORKDIR /app
 
-# Instalar as dependências globalmente incluindo nodemon se necessário, typescript e prisma
 RUN npm install -g typescript ts-node prisma
 
 COPY package*.json ./
@@ -18,12 +16,12 @@ COPY . .
 # Generate prisma client
 RUN npx prisma generate
 
-# Compilar Typescript (o tsconfig.json deve estar configurado para emitir em `dist`)
+# Compilar Typescript
 RUN npm run build
 
-# O banco e imgs estarao mapeados no volume
-# RUN npx prisma migrate deploy
+COPY entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 
 EXPOSE 3015
 
-CMD ["npm", "start"]
+ENTRYPOINT ["./entrypoint.sh"]
